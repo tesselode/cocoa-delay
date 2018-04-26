@@ -36,12 +36,18 @@ void Delay::InitPresets()
 	MakeDefaultPreset("-", numPrograms);
 }
 
+double Delay::GetTargetReadPosition()
+{
+	return GetSampleRate() * GetParam(Parameters::delayTime)->Value();
+}
+
 void Delay::InitBuffer()
 {
 	buffer.clear();
 	for (int i = 0; i < GetSampleRate() * maxDelayTime; i++)
 		buffer.push_back(0.0);
-	position = 0.0;
+	writePosition = 0.0;
+	readPosition = GetTargetReadPosition();
 }
 
 Delay::Delay(IPlugInstanceInfo instanceInfo)
@@ -58,7 +64,8 @@ Delay::~Delay() {}
 
 double Delay::GetBuffer(double position)
 {
-	position = fmod(position, std::size(buffer));
+	while (position < 0.0) position += std::size(buffer);
+	while (position > std::size(buffer)) position -= std::size(buffer);
 	auto positionA = floor((float)position);
 	auto positionB = ceil((float)position);
 	auto sampleA = buffer[positionA];
@@ -70,17 +77,17 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 {
 	for (int s = 0; s < nFrames; s++)
 	{
+		readPosition += (GetTargetReadPosition() - readPosition) * 10.0 / GetSampleRate();
+
 		auto in = inputs[0][s] + inputs[1][s];
 
-		auto out = in + GetBuffer(position) * GetParam(Parameters::feedback)->Value();
-		buffer[(int)position] = out;
+		auto delayOut = GetBuffer(writePosition - readPosition);
+		buffer[writePosition] = in + delayOut * GetParam(Parameters::feedback)->Value();
+		writePosition += 1;
+		writePosition %= std::size(buffer);
 
-		position += 1.0 * maxDelayTime / GetParam(Parameters::delayTime)->Value();
-		position = fmod(position, std::size(buffer));
-
-		auto wet = GetParam(Parameters::wetVolume)->Value();
-		outputs[0][s] = inputs[0][s] * (1.0 - wet) + out * wet;
-		outputs[1][s] = inputs[1][s] * (1.0 - wet) + out * wet;
+		outputs[0][s] = inputs[0][s] + delayOut * GetParam(Parameters::wetVolume)->Value();
+		outputs[1][s] = inputs[1][s] + delayOut * GetParam(Parameters::wetVolume)->Value();
 	}
 }
 

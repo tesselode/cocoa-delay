@@ -19,11 +19,13 @@ private:
 	void InitParameters();
 	void InitGraphics();
 	void InitPresets();
+	double GetTargetReadPosition();
 	void InitBuffer();
 	double GetBuffer(double position);
 
 	std::vector<double> buffer;
-	double position = 0.0;
+	int writePosition;
+	double readPosition;
 };
 
 #endif
