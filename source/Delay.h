@@ -20,10 +20,10 @@ private:
 	void InitGraphics();
 	void InitPresets();
 	void InitBuffer();
+	double GetBuffer(double position);
 
 	std::vector<double> buffer;
-	int readPosition;
-	int writePosition;
+	double position = 0.0;
 };
 
 #endif

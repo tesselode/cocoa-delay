@@ -41,9 +41,7 @@ void Delay::InitBuffer()
 	buffer.clear();
 	for (int i = 0; i < GetSampleRate() * maxDelayTime; i++)
 		buffer.push_back(0.0);
-	readPosition = 0;
-	writePosition = GetSampleRate() * GetParam(Parameters::delayTime)->Value();
-	writePosition %= std::size(buffer);
+	position = 0.0;
 }
 
 Delay::Delay(IPlugInstanceInfo instanceInfo)
@@ -58,22 +56,31 @@ Delay::Delay(IPlugInstanceInfo instanceInfo)
 
 Delay::~Delay() {}
 
+double Delay::GetBuffer(double position)
+{
+	position = fmod(position, std::size(buffer));
+	auto positionA = floor((float)position);
+	auto positionB = ceil((float)position);
+	auto sampleA = buffer[positionA];
+	auto sampleB = buffer[positionB];
+	return sampleA + (sampleB - sampleA) * fmod(position, 1.0);
+}
+
 void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
 	for (int s = 0; s < nFrames; s++)
 	{
 		auto in = inputs[0][s] + inputs[1][s];
 
-		auto out = in + buffer[readPosition] * GetParam(Parameters::feedback)->Value();
-		buffer[writePosition] = out;
+		auto out = in + GetBuffer(position) * GetParam(Parameters::feedback)->Value();
+		buffer[(int)position] = out;
 
-		readPosition += 1;
-		readPosition %= std::size(buffer);
-		writePosition += 1;
-		writePosition %= std::size(buffer);
+		position += 1.0 * maxDelayTime / GetParam(Parameters::delayTime)->Value();
+		position = fmod(position, std::size(buffer));
 
-		outputs[0][s] = inputs[0][s] + out * GetParam(Parameters::wetVolume)->Value();
-		outputs[1][s] = inputs[1][s] + out * GetParam(Parameters::wetVolume)->Value();
+		auto wet = GetParam(Parameters::wetVolume)->Value();
+		outputs[0][s] = inputs[0][s] * (1.0 - wet) + out * wet;
+		outputs[1][s] = inputs[1][s] * (1.0 - wet) + out * wet;
 	}
 }
 
@@ -87,12 +94,4 @@ void Delay::Reset()
 void Delay::OnParamChange(int paramIdx)
 {
 	IMutexLock lock(this);
-
-	switch (paramIdx)
-	{
-	case delayTime:
-		writePosition = readPosition + GetSampleRate() * GetParam(Parameters::delayTime)->Value();
-		writePosition %= std::size(buffer);
-		break;
-	}
 }
