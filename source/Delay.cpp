@@ -4,40 +4,76 @@
 #include "resource.h"
 
 const int numPrograms = 128;
+const int maxDelayTime = 2;
 
 enum Parameters
 {
+	delayTime,
+	feedback,
+	wetVolume,
 	numParameters
 };
 
-Delay::Delay(IPlugInstanceInfo instanceInfo)
-  :	IPLUG_CTOR(numParameters, numPrograms, instanceInfo)
+void Delay::InitParameters()
 {
-	TRACE;
+	GetParam(Parameters::delayTime)->InitDouble("Delay time", 1.0, 0.1, maxDelayTime, .01);
+	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
+	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
+}
 
+void Delay::InitGraphics()
+{
 	IGraphics* pGraphics = MakeGraphics(this, GUI_WIDTH, GUI_HEIGHT, 120);
 	pGraphics->AttachPanelBackground(&COLOR_GRAY);
 
 	IBitmap knob = pGraphics->LoadIBitmap(KNOB_ID, KNOB_FN, 60);
 
 	AttachGraphics(pGraphics);
+}
 
+void Delay::InitPresets()
+{
 	MakeDefaultPreset("-", numPrograms);
+}
+
+void Delay::InitBuffer()
+{
+	buffer.clear();
+	for (int i = 0; i < GetSampleRate() * maxDelayTime; i++)
+		buffer.push_back(0.0);
+	readPosition = 0;
+	writePosition = GetSampleRate() * GetParam(Parameters::delayTime)->Value();
+	writePosition %= std::size(buffer);
+}
+
+Delay::Delay(IPlugInstanceInfo instanceInfo)
+  :	IPLUG_CTOR(numParameters, numPrograms, instanceInfo)
+{
+	TRACE;
+
+	InitParameters();
+	InitGraphics();
+	InitPresets();
 }
 
 Delay::~Delay() {}
 
 void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
-	double* in1 = inputs[0];
-	double* in2 = inputs[1];
-	double* out1 = outputs[0];
-	double* out2 = outputs[1];
-
-	for (int s = 0; s < nFrames; ++s, ++in1, ++in2, ++out1, ++out2)
+	for (int s = 0; s < nFrames; s++)
 	{
-		*out1 = 0.0;
-		*out2 = 0.0;
+		auto in = inputs[0][s] + inputs[1][s];
+
+		auto out = in + buffer[readPosition] * GetParam(Parameters::feedback)->Value();
+		buffer[writePosition] = out;
+
+		readPosition += 1;
+		readPosition %= std::size(buffer);
+		writePosition += 1;
+		writePosition %= std::size(buffer);
+
+		outputs[0][s] = inputs[0][s] + out * GetParam(Parameters::wetVolume)->Value();
+		outputs[1][s] = inputs[1][s] + out * GetParam(Parameters::wetVolume)->Value();
 	}
 }
 
@@ -45,9 +81,18 @@ void Delay::Reset()
 {
 	TRACE;
 	IMutexLock lock(this);
+	InitBuffer();
 }
 
 void Delay::OnParamChange(int paramIdx)
 {
 	IMutexLock lock(this);
+
+	switch (paramIdx)
+	{
+	case delayTime:
+		writePosition = readPosition + GetSampleRate() * GetParam(Parameters::delayTime)->Value();
+		writePosition %= std::size(buffer);
+		break;
+	}
 }
