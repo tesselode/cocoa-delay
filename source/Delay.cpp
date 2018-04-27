@@ -12,6 +12,8 @@ enum Parameters
 	tempoSync,
 	tempoSyncTime,
 	feedback,
+	feedbackLp,
+	feedbackHp,
 	wetVolume,
 	numParameters
 };
@@ -46,6 +48,8 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
+	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
+	GetParam(Parameters::feedbackHp)->InitDouble("Feedback high pass", 0.0, 0.0, 1.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
 }
 
@@ -146,7 +150,13 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto in = inputs[0][s] + inputs[1][s];
 
 		auto delayOut = GetBuffer(writePosition - readPosition);
-		buffer[writePosition] = in + delayOut * GetParam(Parameters::feedback)->Value();
+		delayOut *= GetParam(Parameters::feedback)->Value();
+		lp += (delayOut - lp) * GetParam(Parameters::feedbackLp)->Value();
+		delayOut = lp;
+		hp += (delayOut - hp) * GetParam(Parameters::feedbackHp)->Value();
+		delayOut -= hp;
+
+		buffer[writePosition] = in + delayOut;
 		writePosition += 1;
 		writePosition %= std::size(buffer);
 

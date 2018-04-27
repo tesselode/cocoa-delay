@@ -24,9 +24,14 @@ private:
 	void InitBuffer();
 	double GetBuffer(double position);
 
+	// delay
 	std::vector<double> buffer;
 	int writePosition;
 	double readPosition;
+
+	// filters
+	double lp = 0.0;
+	double hp = 0.0;
 };
 
 #endif
