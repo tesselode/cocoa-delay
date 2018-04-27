@@ -19,6 +19,7 @@ private:
 	void InitParameters();
 	void InitGraphics();
 	void InitPresets();
+	double GetDelayTime();
 	double GetTargetReadPosition();
 	void InitBuffer();
 	double GetBuffer(double position);

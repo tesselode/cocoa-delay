@@ -4,19 +4,47 @@
 #include "resource.h"
 
 const int numPrograms = 128;
-const int maxDelayTime = 2;
+const int tapeLength = 10;
 
 enum Parameters
 {
 	delayTime,
+	tempoSync,
+	tempoSyncTime,
 	feedback,
 	wetVolume,
 	numParameters
 };
 
+enum TempoSyncTimes
+{
+	whole,
+	dottedHalf,
+	half,
+	tripletHalf,
+	dottedQuarter,
+	quarter,
+	tripletQuarter,
+	dottedEighth,
+	eighth,
+	tripletEighth,
+	dottedSixteenth,
+	sixteenth,
+	tripletSixteenth,
+	dottedThirtysecond,
+	thirtysecond,
+	tripletThirtysecond,
+	dottedSixtyforth,
+	sixtyforth,
+	tripletSixtyforth,
+	numTempoSyncTimes
+};
+
 void Delay::InitParameters()
 {
-	GetParam(Parameters::delayTime)->InitDouble("Delay time", 1.0, 0.1, maxDelayTime, .01);
+	GetParam(Parameters::delayTime)->InitDouble("Delay time", 1.0, 0.001, 2.0, .01, "", "", 2.0);
+	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
+	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
 }
@@ -36,15 +64,51 @@ void Delay::InitPresets()
 	MakeDefaultPreset("-", numPrograms);
 }
 
+double Delay::GetDelayTime()
+{
+	
+	switch ((bool)GetParam(Parameters::tempoSync)->Value())
+	{
+	case true:
+	{
+		auto beatLength = 60 / GetTempo();
+		switch ((TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value())
+		{
+		case whole: return beatLength * 4;
+		case dottedHalf: return beatLength * 3;
+		case half: return beatLength * 2;
+		case tripletHalf: return beatLength * 4/3;
+		case dottedQuarter: return beatLength * 3/2;
+		case quarter: return beatLength * 1;
+		case tripletQuarter: return beatLength * 2/3;
+		case dottedEighth: return beatLength * 3/4;
+		case eighth: return beatLength * 1/2;
+		case tripletEighth: return beatLength * 1/3;
+		case dottedSixteenth: return beatLength * 3/8;
+		case sixteenth: return beatLength * 1/4;
+		case tripletSixteenth: return beatLength * 1/6;
+		case dottedThirtysecond: return beatLength * 3/16;
+		case thirtysecond: return beatLength * 1/8;
+		case tripletThirtysecond: return beatLength * 1/12;
+		case dottedSixtyforth: return beatLength * 3/32;
+		case sixtyforth: return beatLength * 1/16;
+		case tripletSixtyforth: return beatLength * 1/24;
+		}
+	}
+	case false:
+		return GetParam(Parameters::delayTime)->Value();
+	}
+}
+
 double Delay::GetTargetReadPosition()
 {
-	return GetSampleRate() * GetParam(Parameters::delayTime)->Value();
+	return GetSampleRate() * GetDelayTime();
 }
 
 void Delay::InitBuffer()
 {
 	buffer.clear();
-	for (int i = 0; i < GetSampleRate() * maxDelayTime; i++)
+	for (int i = 0; i < GetSampleRate() * tapeLength; i++)
 		buffer.push_back(0.0);
 	writePosition = 0.0;
 	readPosition = GetTargetReadPosition();
