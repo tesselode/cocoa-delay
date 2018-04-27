@@ -42,7 +42,7 @@ enum TempoSyncTimes
 
 void Delay::InitParameters()
 {
-	GetParam(Parameters::delayTime)->InitDouble("Delay time", 1.0, 0.001, 2.0, .01, "", "", 2.0);
+	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
@@ -150,8 +150,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		writePosition += 1;
 		writePosition %= std::size(buffer);
 
-		outputs[0][s] = inputs[0][s] + delayOut * GetParam(Parameters::wetVolume)->Value();
-		outputs[1][s] = inputs[1][s] + delayOut * GetParam(Parameters::wetVolume)->Value();
+		outputs[0][s] = inputs[0][s] + delayOut * GetParam(Parameters::wetVolume)->Value() * .5;
+		outputs[1][s] = inputs[1][s] + delayOut * GetParam(Parameters::wetVolume)->Value() * .5;
 	}
 }
 
