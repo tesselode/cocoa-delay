@@ -51,7 +51,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackWidth)->InitDouble("Feedback width", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::feedbackPan)->InitDouble("Feedback pan", 0.0, -.5, .5, .01);
+	GetParam(Parameters::feedbackPan)->InitDouble("Feedback pan", 0.0, -pi * .25, pi * .25, .01);
 	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackHp)->InitDouble("Feedback high pass", 0.0, 0.0, 1.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
@@ -158,12 +158,12 @@ void Delay::ChangeStereoWidth(double inL, double inR, double width, double & out
 	outR = mid - side;
 }
 
-void Delay::Pan(double inL, double inR, double p, double &outL, double &outR)
+void Delay::Pan(double inL, double inR, double angle, double &outL, double &outR)
 {
-	auto scale = 1.0 / (.5 + abs(p));
-	p += .5;
-	outL = inL * (1.0 - p) * scale;
-	outR = inR * p * scale;
+	auto c = cos(angle);
+	auto s = sin(angle);
+	outL = inL * c - inR * s;
+	outR = inL * s + inR * c;
 }
 
 void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)

@@ -6,6 +6,8 @@
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
 
+const double pi = 2 * acos(0.0);
+
 class Delay : public IPlug
 {
 public:
@@ -25,7 +27,7 @@ private:
 	double GetTargetReadPosition();
 	double GetBuffer(std::vector<double> &buffer, double position);
 	void ChangeStereoWidth(double inL, double inR, double width, double &outL, double &outR);
-	void Pan(double inL, double inR, double p, double & outL, double & outR);
+	void Pan(double inL, double inR, double angle, double & outL, double & outR);
 
 	// delay
 	std::vector<double> bufferL;
