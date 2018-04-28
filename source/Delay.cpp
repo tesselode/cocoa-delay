@@ -68,6 +68,19 @@ void Delay::InitPresets()
 	MakeDefaultPreset("-", numPrograms);
 }
 
+void Delay::InitBuffer()
+{
+	bufferL.clear();
+	bufferR.clear();
+	for (int i = 0; i < GetSampleRate() * tapeLength; i++)
+	{
+		bufferL.push_back(0.0);
+		bufferR.push_back(0.0);
+	}
+	writePosition = 0.0;
+	readPosition = GetTargetReadPosition();
+}
+
 double Delay::GetDelayTime()
 {
 	
@@ -109,15 +122,6 @@ double Delay::GetTargetReadPosition()
 	return GetSampleRate() * GetDelayTime();
 }
 
-void Delay::InitBuffer()
-{
-	buffer.clear();
-	for (int i = 0; i < GetSampleRate() * tapeLength; i++)
-		buffer.push_back(0.0);
-	writePosition = 0.0;
-	readPosition = GetTargetReadPosition();
-}
-
 Delay::Delay(IPlugInstanceInfo instanceInfo)
   :	IPLUG_CTOR(numParameters, numPrograms, instanceInfo)
 {
@@ -130,7 +134,7 @@ Delay::Delay(IPlugInstanceInfo instanceInfo)
 
 Delay::~Delay() {}
 
-double Delay::GetBuffer(double position)
+double Delay::GetBuffer(std::vector<double> &buffer, double position)
 {
 	while (position < 0.0) position += std::size(buffer);
 	while (position > std::size(buffer)) position -= std::size(buffer);
@@ -145,23 +149,34 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 {
 	for (int s = 0; s < nFrames; s++)
 	{
+		// update read position
 		readPosition += (GetTargetReadPosition() - readPosition) * 10.0 / GetSampleRate();
 
-		auto in = inputs[0][s] + inputs[1][s];
+		// read from buffer
+		auto outL = GetBuffer(bufferL, writePosition - readPosition);
+		auto outR = GetBuffer(bufferR, writePosition - readPosition);
+		outL *= GetParam(Parameters::feedback)->Value();
+		outR *= GetParam(Parameters::feedback)->Value();
 
-		auto delayOut = GetBuffer(writePosition - readPosition);
-		delayOut *= GetParam(Parameters::feedback)->Value();
-		lp += (delayOut - lp) * GetParam(Parameters::feedbackLp)->Value();
-		delayOut = lp;
-		hp += (delayOut - hp) * GetParam(Parameters::feedbackHp)->Value();
-		delayOut -= hp;
+		// filters
+		lp.Process(outL, outR, GetParam(Parameters::feedbackLp)->Value(), outL, outR);
+		auto hpOutL = 0.0;
+		auto hpOutR = 0.0;
+		hp.Process(outL, outR, GetParam(Parameters::feedbackHp)->Value(), hpOutL, hpOutR);
+		outL -= hpOutL;
+		outR -= hpOutR;
 
-		buffer[writePosition] = in + delayOut;
+		// write to buffer
+		bufferL[writePosition] = inputs[0][s] + outL;
+		bufferR[writePosition] = inputs[1][s] + outR;
+
+		// increment write position
 		writePosition += 1;
-		writePosition %= std::size(buffer);
+		writePosition %= std::size(bufferL);
 
-		outputs[0][s] = inputs[0][s] + delayOut * GetParam(Parameters::wetVolume)->Value() * .5;
-		outputs[1][s] = inputs[1][s] + delayOut * GetParam(Parameters::wetVolume)->Value() * .5;
+		// output
+		outputs[0][s] = inputs[0][s] + outL * GetParam(Parameters::wetVolume)->Value() * .5;
+		outputs[1][s] = inputs[1][s] + outR * GetParam(Parameters::wetVolume)->Value() * .5;
 	}
 }
 

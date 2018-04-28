@@ -2,6 +2,7 @@
 #define __DELAY__
 
 #include <cmath>
+#include "Filter.h"
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
 
@@ -19,19 +20,20 @@ private:
 	void InitParameters();
 	void InitGraphics();
 	void InitPresets();
+	void InitBuffer();
 	double GetDelayTime();
 	double GetTargetReadPosition();
-	void InitBuffer();
-	double GetBuffer(double position);
+	double GetBuffer(std::vector<double> &buffer, double position);
 
 	// delay
-	std::vector<double> buffer;
+	std::vector<double> bufferL;
+	std::vector<double> bufferR;
 	int writePosition;
 	double readPosition;
 
 	// filters
-	double lp = 0.0;
-	double hp = 0.0;
+	Filter lp;
+	Filter hp;
 };
 
 #endif
