@@ -17,6 +17,7 @@ enum Parameters
 	feedbackLp,
 	feedbackHp,
 	feedbackDrive,
+	dryVolume,
 	wetVolume,
 	numParameters
 };
@@ -56,7 +57,8 @@ void Delay::InitParameters()
 	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackHp)->InitDouble("Feedback high pass", 0.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackDrive)->InitDouble("Feedback drive", 0.0, 0.0, 10.0, .01);
-	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
+	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
+	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 }
 
 void Delay::InitGraphics()
@@ -214,8 +216,10 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		writePosition %= std::size(bufferL);
 
 		// output
-		outputs[0][s] = inputs[0][s] + outL * GetParam(Parameters::wetVolume)->Value();
-		outputs[1][s] = inputs[1][s] + outR * GetParam(Parameters::wetVolume)->Value();
+		auto dry = GetParam(Parameters::dryVolume)->Value();
+		auto wet = GetParam(Parameters::wetVolume)->Value();
+		outputs[0][s] = inputs[0][s] * dry + outL * wet;
+		outputs[1][s] = inputs[1][s] * dry + outR * wet;
 	}
 }
 
