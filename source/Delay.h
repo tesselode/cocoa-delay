@@ -25,6 +25,7 @@ private:
 	double GetTargetReadPosition();
 	double GetBuffer(std::vector<double> &buffer, double position);
 	void ChangeStereoWidth(double inL, double inR, double width, double &outL, double &outR);
+	void Pan(double inL, double inR, double p, double & outL, double & outR);
 
 	// delay
 	std::vector<double> bufferL;
