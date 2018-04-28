@@ -56,7 +56,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.1, .1, .01);
 	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .25, pi * .25, .01);
+	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
 	GetParam(Parameters::pingPong)->InitBool("Ping pong", false);
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, 1.0, .01);
