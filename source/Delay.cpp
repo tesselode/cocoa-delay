@@ -53,7 +53,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
-	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.1, .1, .01);
+	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", 1.0, 0.0, 1.0, .01);
@@ -82,8 +82,8 @@ void Delay::GetReadPositions(double &l, double &r)
 {
 	auto offset = GetParam(Parameters::stereoOffset)->Value() * .5;
 	auto baseTime = GetDelayTime();
-	auto timeL = baseTime - offset;
-	auto timeR = baseTime + offset;
+	auto timeL = pow(baseTime, 1.0 + offset);
+	auto timeR = pow(baseTime, 1.0 - offset);
 	l = timeL * GetSampleRate();
 	r = timeR * GetSampleRate();
 }
