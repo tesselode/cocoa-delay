@@ -15,6 +15,7 @@ enum Parameters
 	stereoOffset,
 	stereoWidth,
 	pan,
+	pingPong,
 	lowPass,
 	highPass,
 	driveAmount,
@@ -56,6 +57,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.1, .1, .01);
 	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .25, pi * .25, .01);
+	GetParam(Parameters::pingPong)->InitBool("Ping pong", false);
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.0, 0.0, 10.0, .01);
@@ -199,6 +201,12 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 
 		// panning
 		Pan(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
+		switch ((bool)GetParam(Parameters::pingPong)->Value())
+		{
+		case true:
+			Pan(outL, outR, pi * .5, outL, outR);
+			break;
+		}
 
 		// filters
 		lp.Process(outL, outR, GetParam(Parameters::lowPass)->Value(), outL, outR);
