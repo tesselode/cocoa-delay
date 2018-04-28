@@ -202,8 +202,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		writePosition %= std::size(bufferL);
 
 		// output
-		outputs[0][s] = inputs[0][s] + outL * GetParam(Parameters::wetVolume)->Value() * .5;
-		outputs[1][s] = inputs[1][s] + outR * GetParam(Parameters::wetVolume)->Value() * .5;
+		outputs[0][s] = inputs[0][s] + outL * GetParam(Parameters::wetVolume)->Value();
+		outputs[1][s] = inputs[1][s] + outR * GetParam(Parameters::wetVolume)->Value();
 	}
 }
 
