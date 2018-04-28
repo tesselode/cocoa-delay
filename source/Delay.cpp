@@ -16,6 +16,7 @@ enum Parameters
 	feedbackPan,
 	feedbackLp,
 	feedbackHp,
+	feedbackDrive,
 	wetVolume,
 	numParameters
 };
@@ -54,6 +55,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::feedbackPan)->InitDouble("Feedback pan", 0.0, -pi * .25, pi * .25, .01);
 	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackHp)->InitDouble("Feedback high pass", 0.0, 0.0, 1.0, .01);
+	GetParam(Parameters::feedbackDrive)->InitDouble("Feedback drive", 0.0, 0.0, 10.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
 }
 
@@ -176,6 +178,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// read from buffer
 		auto outL = GetBuffer(bufferL, writePosition - readPosition);
 		auto outR = GetBuffer(bufferR, writePosition - readPosition);
+		
+		// feedback volume
 		outL *= GetParam(Parameters::feedback)->Value();
 		outR *= GetParam(Parameters::feedback)->Value();
 
@@ -192,6 +196,14 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		hp.Process(outL, outR, GetParam(Parameters::feedbackHp)->Value(), hpOutL, hpOutR);
 		outL -= hpOutL;
 		outR -= hpOutR;
+
+		// feedback drive
+		auto drive = GetParam(Parameters::feedbackDrive)->Value();
+		if (drive > 0.0)
+		{
+			outL = sin(outL * drive) / drive;
+			outR = sin(outR * drive) / drive;
+		}
 
 		// write to buffer
 		bufferL[writePosition] = inputs[0][s] + outL;
