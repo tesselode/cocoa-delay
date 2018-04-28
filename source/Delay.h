@@ -22,9 +22,9 @@ private:
 	void InitParameters();
 	void InitGraphics();
 	void InitPresets();
+	void GetReadPositions(double & l, double & r);
 	void InitBuffer();
 	double GetDelayTime();
-	double GetTargetReadPosition();
 	double GetBuffer(std::vector<double> &buffer, double position);
 	void ChangeStereoWidth(double inL, double inR, double width, double &outL, double &outR);
 	void Pan(double inL, double inR, double angle, double & outL, double & outR);
@@ -33,7 +33,8 @@ private:
 	std::vector<double> bufferL;
 	std::vector<double> bufferR;
 	int writePosition;
-	double readPosition;
+	double readPositionL;
+	double readPositionR;
 
 	// filters
 	Filter lp;

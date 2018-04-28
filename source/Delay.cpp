@@ -12,6 +12,7 @@ enum Parameters
 	tempoSync,
 	tempoSyncTime,
 	feedback,
+	feedbackOffset,
 	feedbackWidth,
 	feedbackPan,
 	feedbackLp,
@@ -52,6 +53,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
+	GetParam(Parameters::feedbackOffset)->InitDouble("Feedback stereo offset", 0.0, -.1, .1, .01);
 	GetParam(Parameters::feedbackWidth)->InitDouble("Feedback width", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackPan)->InitDouble("Feedback pan", 0.0, -pi * .25, pi * .25, .01);
 	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
@@ -76,6 +78,16 @@ void Delay::InitPresets()
 	MakeDefaultPreset("-", numPrograms);
 }
 
+void Delay::GetReadPositions(double &l, double &r)
+{
+	auto offset = GetParam(Parameters::feedbackOffset)->Value() * .5;
+	auto baseTime = GetDelayTime();
+	auto timeL = baseTime - offset;
+	auto timeR = baseTime + offset;
+	l = timeL * GetSampleRate();
+	r = timeR * GetSampleRate();
+}
+
 void Delay::InitBuffer()
 {
 	bufferL.clear();
@@ -86,12 +98,11 @@ void Delay::InitBuffer()
 		bufferR.push_back(0.0);
 	}
 	writePosition = 0.0;
-	readPosition = GetTargetReadPosition();
+	GetReadPositions(readPositionL, readPositionR);
 }
 
 double Delay::GetDelayTime()
 {
-	
 	switch ((bool)GetParam(Parameters::tempoSync)->Value())
 	{
 	case true:
@@ -123,11 +134,6 @@ double Delay::GetDelayTime()
 	case false:
 		return GetParam(Parameters::delayTime)->Value();
 	}
-}
-
-double Delay::GetTargetReadPosition()
-{
-	return GetSampleRate() * GetDelayTime();
 }
 
 Delay::Delay(IPlugInstanceInfo instanceInfo)
@@ -174,12 +180,15 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 {
 	for (int s = 0; s < nFrames; s++)
 	{
-		// update read position
-		readPosition += (GetTargetReadPosition() - readPosition) * 10.0 / GetSampleRate();
+		// update read positions
+		double targetReadPositionL, targetReadPositionR;
+		GetReadPositions(targetReadPositionL, targetReadPositionR);
+		readPositionL += (targetReadPositionL - readPositionL) * 10.0 / GetSampleRate();
+		readPositionR += (targetReadPositionR - readPositionR) * 10.0 / GetSampleRate();
 
 		// read from buffer
-		auto outL = GetBuffer(bufferL, writePosition - readPosition);
-		auto outR = GetBuffer(bufferR, writePosition - readPosition);
+		auto outL = GetBuffer(bufferL, writePosition - readPositionL);
+		auto outR = GetBuffer(bufferR, writePosition - readPositionR);
 		
 		// feedback volume
 		outL *= GetParam(Parameters::feedback)->Value();
