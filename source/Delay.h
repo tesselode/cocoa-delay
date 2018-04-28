@@ -24,6 +24,7 @@ private:
 	double GetDelayTime();
 	double GetTargetReadPosition();
 	double GetBuffer(std::vector<double> &buffer, double position);
+	void ChangeStereoWidth(double inL, double inR, double width, double &outL, double &outR);
 
 	// delay
 	std::vector<double> bufferL;

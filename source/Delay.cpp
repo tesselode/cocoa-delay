@@ -12,6 +12,7 @@ enum Parameters
 	tempoSync,
 	tempoSyncTime,
 	feedback,
+	feedbackWidth,
 	feedbackLp,
 	feedbackHp,
 	wetVolume,
@@ -48,6 +49,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
+	GetParam(Parameters::feedbackWidth)->InitDouble("Feedback width", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::feedbackHp)->InitDouble("Feedback high pass", 0.0, 0.0, 1.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 1.0, .01);
@@ -145,6 +147,15 @@ double Delay::GetBuffer(std::vector<double> &buffer, double position)
 	return sampleA + (sampleB - sampleA) * fmod(position, 1.0);
 }
 
+void Delay::ChangeStereoWidth(double inL, double inR, double width, double & outL, double & outR)
+{
+	auto mid = (inL + inR) * .5;
+	auto side = (inL - inR) * .5;
+	side *= width;
+	outL = mid + side;
+	outR = mid - side;
+}
+
 void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
 	for (int s = 0; s < nFrames; s++)
@@ -157,6 +168,9 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto outR = GetBuffer(bufferR, writePosition - readPosition);
 		outL *= GetParam(Parameters::feedback)->Value();
 		outR *= GetParam(Parameters::feedback)->Value();
+
+		// stereo width
+		ChangeStereoWidth(outL, outR, GetParam(Parameters::feedbackWidth)->Value(), outL, outR);
 
 		// filters
 		lp.Process(outL, outR, GetParam(Parameters::feedbackLp)->Value(), outL, outR);
