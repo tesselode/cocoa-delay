@@ -12,12 +12,12 @@ enum Parameters
 	tempoSync,
 	tempoSyncTime,
 	feedback,
-	feedbackOffset,
-	feedbackWidth,
-	feedbackPan,
-	feedbackLp,
-	feedbackHp,
-	feedbackDrive,
+	stereoOffset,
+	stereoWidth,
+	pan,
+	lowPass,
+	highPass,
+	driveAmount,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -53,12 +53,12 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
-	GetParam(Parameters::feedbackOffset)->InitDouble("Feedback stereo offset", 0.0, -.1, .1, .01);
-	GetParam(Parameters::feedbackWidth)->InitDouble("Feedback width", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::feedbackPan)->InitDouble("Feedback pan", 0.0, -pi * .25, pi * .25, .01);
-	GetParam(Parameters::feedbackLp)->InitDouble("Feedback low pass", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::feedbackHp)->InitDouble("Feedback high pass", 0.0, 0.0, 1.0, .01);
-	GetParam(Parameters::feedbackDrive)->InitDouble("Feedback drive", 0.0, 0.0, 10.0, .01);
+	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.1, .1, .01);
+	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
+	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .25, pi * .25, .01);
+	GetParam(Parameters::lowPass)->InitDouble("Low pass", 1.0, 0.0, 1.0, .01);
+	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, 1.0, .01);
+	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.0, 0.0, 10.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 }
@@ -80,7 +80,7 @@ void Delay::InitPresets()
 
 void Delay::GetReadPositions(double &l, double &r)
 {
-	auto offset = GetParam(Parameters::feedbackOffset)->Value() * .5;
+	auto offset = GetParam(Parameters::stereoOffset)->Value() * .5;
 	auto baseTime = GetDelayTime();
 	auto timeL = baseTime - offset;
 	auto timeR = baseTime + offset;
@@ -195,21 +195,21 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		outR *= GetParam(Parameters::feedback)->Value();
 
 		// stereo width
-		ChangeStereoWidth(outL, outR, GetParam(Parameters::feedbackWidth)->Value(), outL, outR);
+		ChangeStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
 
 		// panning
-		Pan(outL, outR, GetParam(Parameters::feedbackPan)->Value(), outL, outR);
+		Pan(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
 
 		// filters
-		lp.Process(outL, outR, GetParam(Parameters::feedbackLp)->Value(), outL, outR);
+		lp.Process(outL, outR, GetParam(Parameters::lowPass)->Value(), outL, outR);
 		auto hpOutL = 0.0;
 		auto hpOutR = 0.0;
-		hp.Process(outL, outR, GetParam(Parameters::feedbackHp)->Value(), hpOutL, hpOutR);
+		hp.Process(outL, outR, GetParam(Parameters::highPass)->Value(), hpOutL, hpOutR);
 		outL -= hpOutL;
 		outR -= hpOutR;
 
 		// feedback drive
-		auto drive = GetParam(Parameters::feedbackDrive)->Value();
+		auto drive = GetParam(Parameters::driveAmount)->Value();
 		if (drive > 0.0)
 		{
 			outL = sin(outL * drive) / drive;
