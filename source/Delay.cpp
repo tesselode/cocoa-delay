@@ -22,6 +22,7 @@ enum Parameters
 	highPass,
 	driveStyle,
 	driveAmount,
+	driveEdge,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -67,6 +68,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01);
 	GetParam(Parameters::driveStyle)->InitEnum("Drive style", DriveStyles::sinDrive, numDriveStyles);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
+	GetParam(Parameters::driveEdge)->InitDouble("Drive edge", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 }
@@ -226,10 +228,11 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// feedback drive
 		auto driveStyle = (DriveStyles)(int)GetParam(Parameters::driveStyle)->Value();
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
+		auto driveEdge = GetParam(Parameters::driveEdge)->Value();
 		if (driveAmount > 0)
 		{
-			outL = drive(outL, driveStyle, driveAmount);
-			outR = drive(outR, driveStyle, driveAmount);
+			outL = drive(outL, driveStyle, driveAmount, driveEdge);
+			outR = drive(outR, driveStyle, driveAmount, driveEdge);
 		}
 
 		// write to buffer

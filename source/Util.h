@@ -56,9 +56,9 @@ enum DriveStyles
 	numDriveStyles,
 };
 
-inline double drive(double x, DriveStyles style, double amount)
+inline double drive(double input, DriveStyles style, double amount, double edge)
 {
-	x *= amount;
+	auto x = input * amount;
 	switch (style)
 	{
 	case absDrive:
@@ -92,7 +92,7 @@ inline double drive(double x, DriveStyles style, double amount)
 		break;
 	}
 	x /= amount;
-	return x;
+	return input + (x - input) * edge;
 }
 
 // random numbers
