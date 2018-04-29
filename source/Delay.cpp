@@ -9,6 +9,8 @@ const int tapeLength = 10;
 enum Parameters
 {
 	delayTime,
+	lfoAmount,
+	lfoFrequency,
 	tempoSync,
 	tempoSyncTime,
 	feedback,
@@ -50,6 +52,8 @@ enum TempoSyncTimes
 void Delay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
+	GetParam(Parameters::lfoAmount)->InitDouble("LFO amount", 0.0, 0.0, .5, .01, "", "", 2.0);
+	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
@@ -103,6 +107,7 @@ void Delay::InitBuffer()
 
 double Delay::GetDelayTime()
 {
+	double delayTime = 0.0;
 	switch ((bool)GetParam(Parameters::tempoSync)->Value())
 	{
 	case true:
@@ -110,30 +115,33 @@ double Delay::GetDelayTime()
 		auto beatLength = 60 / GetTempo();
 		switch ((TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value())
 		{
-		case whole: return beatLength * 4;
-		case dottedHalf: return beatLength * 3;
-		case half: return beatLength * 2;
-		case tripletHalf: return beatLength * 4/3;
-		case dottedQuarter: return beatLength * 3/2;
-		case quarter: return beatLength * 1;
-		case tripletQuarter: return beatLength * 2/3;
-		case dottedEighth: return beatLength * 3/4;
-		case eighth: return beatLength * 1/2;
-		case tripletEighth: return beatLength * 1/3;
-		case dottedSixteenth: return beatLength * 3/8;
-		case sixteenth: return beatLength * 1/4;
-		case tripletSixteenth: return beatLength * 1/6;
-		case dottedThirtysecond: return beatLength * 3/16;
-		case thirtysecond: return beatLength * 1/8;
-		case tripletThirtysecond: return beatLength * 1/12;
-		case dottedSixtyforth: return beatLength * 3/32;
-		case sixtyforth: return beatLength * 1/16;
-		case tripletSixtyforth: return beatLength * 1/24;
+		case whole: delayTime = beatLength * 4; break;
+		case dottedHalf: delayTime = beatLength * 3; break;
+		case half: delayTime = beatLength * 2; break;
+		case tripletHalf: delayTime = beatLength * 4/3; break;
+		case dottedQuarter: delayTime = beatLength * 3/2; break;
+		case quarter: delayTime = beatLength * 1; break;
+		case tripletQuarter: delayTime = beatLength * 2/3; break;
+		case dottedEighth: delayTime = beatLength * 3/4; break;
+		case eighth: delayTime = beatLength * 1/2; break;
+		case tripletEighth: delayTime = beatLength * 1/3; break;
+		case dottedSixteenth: delayTime = beatLength * 3/8; break;
+		case sixteenth: delayTime = beatLength * 1/4; break;
+		case tripletSixteenth: delayTime = beatLength * 1/6; break;
+		case dottedThirtysecond: delayTime = beatLength * 3/16; break;
+		case thirtysecond: delayTime = beatLength * 1/8; break;
+		case tripletThirtysecond: delayTime = beatLength * 1/12; break;
+		case dottedSixtyforth: delayTime = beatLength * 3/32; break;
+		case sixtyforth: delayTime = beatLength * 1/16; break;
+		case tripletSixtyforth: delayTime = beatLength * 1/24; break;
 		}
 	}
 	case false:
-		return GetParam(Parameters::delayTime)->Value();
+		delayTime = GetParam(Parameters::delayTime)->Value(); break;
 	}
+	auto lfoAmount = GetParam(Parameters::lfoAmount)->Value();
+	if (lfoAmount != 0.0) delayTime = pow(delayTime, 1.0 + lfoAmount * sin(lfoPhase * 2 * pi));
+	return delayTime;
 }
 
 Delay::Delay(IPlugInstanceInfo instanceInfo)
@@ -185,6 +193,10 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		GetReadPositions(targetReadPositionL, targetReadPositionR);
 		readPositionL += (targetReadPositionL - readPositionL) * 10.0 / GetSampleRate();
 		readPositionR += (targetReadPositionR - readPositionR) * 10.0 / GetSampleRate();
+
+		// update modulation
+		lfoPhase += GetParam(Parameters::lfoFrequency)->Value() / GetSampleRate();
+		while (lfoPhase > 1.0) lfoPhase -= 1.0;
 
 		// read from buffer
 		auto outL = GetBuffer(bufferL, writePosition - readPositionL);

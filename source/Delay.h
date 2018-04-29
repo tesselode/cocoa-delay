@@ -39,6 +39,9 @@ private:
 	// filters
 	Filter lp;
 	Filter hp;
+
+	// modulation
+	double lfoPhase = 0.0;
 };
 
 #endif
