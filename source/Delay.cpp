@@ -172,13 +172,26 @@ Delay::~Delay() {}
 
 double Delay::GetBuffer(std::vector<double> &buffer, double position)
 {
-	while (position < 0.0) position += std::size(buffer);
-	while (position > std::size(buffer)) position -= std::size(buffer);
-	auto positionA = floor((float)position);
-	auto positionB = ceil((float)position);
-	auto sampleA = buffer[positionA];
-	auto sampleB = buffer[positionB];
-	return sampleA + (sampleB - sampleA) * fmod(position, 1.0);
+	int p0 = floor(position) - 1;
+	while (p0 < 0) p0 += std::size(buffer);
+	while (p0 >= std::size(buffer)) p0 -= std::size(buffer);
+	int p1 = floor(position);
+	while (p1 < 0) p1 += std::size(buffer);
+	while (p1 >= std::size(buffer)) p1 -= std::size(buffer);
+	int p2 = ceil(position);
+	while (p2 < 0) p2 += std::size(buffer);
+	while (p2 >= std::size(buffer)) p2 -= std::size(buffer);
+	int p3 = ceil(position) + 1;
+	while (p3 < 0) p3 += std::size(buffer);
+	while (p3 >= std::size(buffer)) p3 -= std::size(buffer);
+
+	auto x = position - floor(position);
+	auto y0 = buffer[p0];
+	auto y1 = buffer[p1];
+	auto y2 = buffer[p2];
+	auto y3 = buffer[p3];
+
+	return hermite(x, y0, y1, y2, y3);
 }
 
 void Delay::ChangeStereoWidth(double inL, double inR, double width, double & outL, double & outR)

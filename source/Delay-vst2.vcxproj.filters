@@ -14,6 +14,7 @@
       <Filter>vst2</Filter>
     </ClInclude>
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Delay.rc" />
