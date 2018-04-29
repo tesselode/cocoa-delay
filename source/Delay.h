@@ -21,13 +21,11 @@ private:
 	void InitParameters();
 	void InitGraphics();
 	void InitPresets();
+	double GetDelayTime();
 	void GetReadPositions(double & l, double & r);
 	void InitBuffer();
 	void UpdateDrift();
-	double GetDelayTime();
-	double GetBuffer(std::vector<double> &buffer, double position);
-	void ChangeStereoWidth(double inL, double inR, double width, double &outL, double &outR);
-	void Pan(double inL, double inR, double angle, double & outL, double & outR);
+	double GetSample(std::vector<double> &buffer, double position);
 
 	// delay
 	std::vector<double> bufferL;

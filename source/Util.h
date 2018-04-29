@@ -16,7 +16,7 @@ inline int wrap(int kX, int const kLowerBound, int const kUpperBound)
 }
 
 // musicdsp.org hermite interpolation
-inline float hermite(float x, float y0, float y1, float y2, float y3)
+inline float interpolate(float x, float y0, float y1, float y2, float y3)
 {
 	// 4-point, 3rd-order Hermite (x-form) 
 	float c0 = y1;
@@ -24,6 +24,23 @@ inline float hermite(float x, float y0, float y1, float y2, float y3)
 	float c2 = y0 - 2.5f * y1 + 2.f * y2 - 0.5f * y3;
 	float c3 = 1.5f * (y1 - y2) + 0.5f * (y3 - y0);
 	return ((c3 * x + c2) * x + c1) * x + c0;
+}
+
+inline void adjustStereoWidth(double inL, double inR, double width, double & outL, double & outR)
+{
+	auto mid = (inL + inR) * .5;
+	auto side = (inL - inR) * .5;
+	side *= width;
+	outL = mid + side;
+	outR = mid - side;
+}
+
+inline void adjustPanning(double inL, double inR, double angle, double &outL, double &outR)
+{
+	auto c = cos(angle);
+	auto s = sin(angle);
+	outL = inL * c - inR * s;
+	outR = inL * s + inR * c;
 }
 
 // random numbers

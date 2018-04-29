@@ -84,6 +84,62 @@ void Delay::InitPresets()
 	MakeDefaultPreset("-", numPrograms);
 }
 
+Delay::Delay(IPlugInstanceInfo instanceInfo)
+	: IPLUG_CTOR(numParameters, numPrograms, instanceInfo)
+{
+	TRACE;
+
+	InitParameters();
+	InitGraphics();
+	InitPresets();
+}
+
+Delay::~Delay() {}
+
+double Delay::GetDelayTime()
+{
+	double delayTime = 0.0;
+	switch ((bool)GetParam(Parameters::tempoSync)->Value())
+	{
+	case true:
+	{
+		auto beatLength = 60 / GetTempo();
+		switch ((TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value())
+		{
+		case whole: delayTime = beatLength * 4; break;
+		case dottedHalf: delayTime = beatLength * 3; break;
+		case half: delayTime = beatLength * 2; break;
+		case tripletHalf: delayTime = beatLength * 4 / 3; break;
+		case dottedQuarter: delayTime = beatLength * 3 / 2; break;
+		case quarter: delayTime = beatLength * 1; break;
+		case tripletQuarter: delayTime = beatLength * 2 / 3; break;
+		case dottedEighth: delayTime = beatLength * 3 / 4; break;
+		case eighth: delayTime = beatLength * 1 / 2; break;
+		case tripletEighth: delayTime = beatLength * 1 / 3; break;
+		case dottedSixteenth: delayTime = beatLength * 3 / 8; break;
+		case sixteenth: delayTime = beatLength * 1 / 4; break;
+		case tripletSixteenth: delayTime = beatLength * 1 / 6; break;
+		case dottedThirtysecond: delayTime = beatLength * 3 / 16; break;
+		case thirtysecond: delayTime = beatLength * 1 / 8; break;
+		case tripletThirtysecond: delayTime = beatLength * 1 / 12; break;
+		case dottedSixtyforth: delayTime = beatLength * 3 / 32; break;
+		case sixtyforth: delayTime = beatLength * 1 / 16; break;
+		case tripletSixtyforth: delayTime = beatLength * 1 / 24; break;
+		}
+	}
+	case false:
+		delayTime = GetParam(Parameters::delayTime)->Value(); break;
+	}
+
+	// modulation
+	auto lfoAmount = GetParam(Parameters::lfoAmount)->Value();
+	if (lfoAmount != 0.0) delayTime = pow(delayTime, 1.0 + lfoAmount * sin(lfoPhase * 2 * pi));
+	auto driftAmount = GetParam(Parameters::driftAmount)->Value();
+	if (driftAmount != 0.0) delayTime = pow(delayTime, 1.0 + driftAmount * sin(driftPhase));
+
+	return delayTime;
+}
+
 void Delay::GetReadPositions(double &l, double &r)
 {
 	auto offset = GetParam(Parameters::stereoOffset)->Value() * .5;
@@ -114,63 +170,7 @@ void Delay::UpdateDrift()
 	driftPhase += driftVelocity / GetSampleRate();
 }
 
-double Delay::GetDelayTime()
-{
-	double delayTime = 0.0;
-	switch ((bool)GetParam(Parameters::tempoSync)->Value())
-	{
-	case true:
-	{
-		auto beatLength = 60 / GetTempo();
-		switch ((TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value())
-		{
-		case whole: delayTime = beatLength * 4; break;
-		case dottedHalf: delayTime = beatLength * 3; break;
-		case half: delayTime = beatLength * 2; break;
-		case tripletHalf: delayTime = beatLength * 4/3; break;
-		case dottedQuarter: delayTime = beatLength * 3/2; break;
-		case quarter: delayTime = beatLength * 1; break;
-		case tripletQuarter: delayTime = beatLength * 2/3; break;
-		case dottedEighth: delayTime = beatLength * 3/4; break;
-		case eighth: delayTime = beatLength * 1/2; break;
-		case tripletEighth: delayTime = beatLength * 1/3; break;
-		case dottedSixteenth: delayTime = beatLength * 3/8; break;
-		case sixteenth: delayTime = beatLength * 1/4; break;
-		case tripletSixteenth: delayTime = beatLength * 1/6; break;
-		case dottedThirtysecond: delayTime = beatLength * 3/16; break;
-		case thirtysecond: delayTime = beatLength * 1/8; break;
-		case tripletThirtysecond: delayTime = beatLength * 1/12; break;
-		case dottedSixtyforth: delayTime = beatLength * 3/32; break;
-		case sixtyforth: delayTime = beatLength * 1/16; break;
-		case tripletSixtyforth: delayTime = beatLength * 1/24; break;
-		}
-	}
-	case false:
-		delayTime = GetParam(Parameters::delayTime)->Value(); break;
-	}
-
-	// modulation
-	auto lfoAmount = GetParam(Parameters::lfoAmount)->Value();
-	if (lfoAmount != 0.0) delayTime = pow(delayTime, 1.0 + lfoAmount * sin(lfoPhase * 2 * pi));
-	auto driftAmount = GetParam(Parameters::driftAmount)->Value();
-	if (driftAmount != 0.0) delayTime = pow(delayTime, 1.0 + driftAmount * sin(driftPhase));
-
-	return delayTime;
-}
-
-Delay::Delay(IPlugInstanceInfo instanceInfo)
-  :	IPLUG_CTOR(numParameters, numPrograms, instanceInfo)
-{
-	TRACE;
-
-	InitParameters();
-	InitGraphics();
-	InitPresets();
-}
-
-Delay::~Delay() {}
-
-double Delay::GetBuffer(std::vector<double> &buffer, double position)
+double Delay::GetSample(std::vector<double> &buffer, double position)
 {
 	int p0 = wrap(floor(position) - 1, 0, std::size(buffer) - 1);
 	int p1 = wrap(floor(position), 0, std::size(buffer) - 1);
@@ -183,24 +183,7 @@ double Delay::GetBuffer(std::vector<double> &buffer, double position)
 	auto y2 = buffer[p2];
 	auto y3 = buffer[p3];
 
-	return hermite(x, y0, y1, y2, y3);
-}
-
-void Delay::ChangeStereoWidth(double inL, double inR, double width, double & outL, double & outR)
-{
-	auto mid = (inL + inR) * .5;
-	auto side = (inL - inR) * .5;
-	side *= width;
-	outL = mid + side;
-	outR = mid - side;
-}
-
-void Delay::Pan(double inL, double inR, double angle, double &outL, double &outR)
-{
-	auto c = cos(angle);
-	auto s = sin(angle);
-	outL = inL * c - inR * s;
-	outR = inL * s + inR * c;
+	return interpolate(x, y0, y1, y2, y3);
 }
 
 void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
@@ -219,14 +202,14 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		UpdateDrift();
 
 		// read from buffer
-		auto outL = GetBuffer(bufferL, writePosition - readPositionL);
-		auto outR = GetBuffer(bufferR, writePosition - readPositionR);
+		auto outL = GetSample(bufferL, writePosition - readPositionL);
+		auto outR = GetSample(bufferR, writePosition - readPositionR);
 
 		// stereo width
-		ChangeStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
+		adjustStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
 
 		// panning
-		Pan(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
+		adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
 
 		// filters
 		lp.Process(outL, outR, GetParam(Parameters::lowPass)->Value(), outL, outR);
