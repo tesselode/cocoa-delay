@@ -4,7 +4,16 @@
 
 const double pi = 2 * acos(0.0);
 
-// interpolation
+// https://stackoverflow.com/a/707426
+inline int wrap(int kX, int const kLowerBound, int const kUpperBound)
+{
+	int range_size = kUpperBound - kLowerBound + 1;
+
+	if (kX < kLowerBound)
+		kX += range_size * ((kLowerBound - kX) / range_size + 1);
+
+	return kLowerBound + (kX - kLowerBound) % range_size;
+}
 
 // musicdsp.org hermite interpolation
 inline float hermite(float x, float y0, float y1, float y2, float y3)
