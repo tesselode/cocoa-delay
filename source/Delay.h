@@ -27,6 +27,8 @@ private:
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
 
+	double dt = 0.0;
+
 	// delay
 	std::vector<double> bufferL;
 	std::vector<double> bufferR;

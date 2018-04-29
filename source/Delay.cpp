@@ -165,9 +165,9 @@ void Delay::InitBuffer()
 
 void Delay::UpdateDrift()
 {
-	driftVelocity += random() * 10000.0 / GetSampleRate();
-	driftVelocity -= driftVelocity * 2.0 / GetSampleRate();
-	driftPhase += driftVelocity / GetSampleRate();
+	driftVelocity += random() * 10000.0 * dt;
+	driftVelocity -= driftVelocity * 2.0 * dt;
+	driftPhase += driftVelocity * dt;
 }
 
 double Delay::GetSample(std::vector<double> &buffer, double position)
@@ -193,11 +193,11 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// update read positions
 		double targetReadPositionL, targetReadPositionR;
 		GetReadPositions(targetReadPositionL, targetReadPositionR);
-		readPositionL += (targetReadPositionL - readPositionL) * 10.0 / GetSampleRate();
-		readPositionR += (targetReadPositionR - readPositionR) * 10.0 / GetSampleRate();
+		readPositionL += (targetReadPositionL - readPositionL) * 10.0 * dt;
+		readPositionR += (targetReadPositionR - readPositionR) * 10.0 * dt;
 
 		// update modulation
-		lfoPhase += GetParam(Parameters::lfoFrequency)->Value() / GetSampleRate();
+		lfoPhase += GetParam(Parameters::lfoFrequency)->Value() * dt;
 		while (lfoPhase > 1.0) lfoPhase -= 1.0;
 		UpdateDrift();
 
@@ -247,6 +247,7 @@ void Delay::Reset()
 {
 	TRACE;
 	IMutexLock lock(this);
+	dt = 1.0 / GetSampleRate();
 	InitBuffer();
 }
 
