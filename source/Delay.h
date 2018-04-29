@@ -3,10 +3,9 @@
 
 #include <cmath>
 #include "Filter.h"
+#include "Util.h"
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
-
-const double pi = 2 * acos(0.0);
 
 class Delay : public IPlug
 {
@@ -24,6 +23,7 @@ private:
 	void InitPresets();
 	void GetReadPositions(double & l, double & r);
 	void InitBuffer();
+	void UpdateDrift();
 	double GetDelayTime();
 	double GetBuffer(std::vector<double> &buffer, double position);
 	void ChangeStereoWidth(double inL, double inR, double width, double &outL, double &outR);
@@ -42,6 +42,8 @@ private:
 
 	// modulation
 	double lfoPhase = 0.0;
+	double driftVelocity = 0.0;
+	double driftPhase = 0.0;
 };
 
 #endif

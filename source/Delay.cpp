@@ -11,6 +11,7 @@ enum Parameters
 	delayTime,
 	lfoAmount,
 	lfoFrequency,
+	driftAmount,
 	tempoSync,
 	tempoSyncTime,
 	feedback,
@@ -54,6 +55,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
 	GetParam(Parameters::lfoAmount)->InitDouble("LFO amount", 0.0, 0.0, .5, .01, "", "", 2.0);
 	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
+	GetParam(Parameters::driftAmount)->InitDouble("Drift amount", .001, 0.0, .05, .01, "", "", 2.0);
 	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
@@ -105,6 +107,13 @@ void Delay::InitBuffer()
 	GetReadPositions(readPositionL, readPositionR);
 }
 
+void Delay::UpdateDrift()
+{
+	driftVelocity += random() * 10000.0 / GetSampleRate();
+	driftVelocity -= driftVelocity * 2.0 / GetSampleRate();
+	driftPhase += driftVelocity / GetSampleRate();
+}
+
 double Delay::GetDelayTime()
 {
 	double delayTime = 0.0;
@@ -139,8 +148,13 @@ double Delay::GetDelayTime()
 	case false:
 		delayTime = GetParam(Parameters::delayTime)->Value(); break;
 	}
+
+	// modulation
 	auto lfoAmount = GetParam(Parameters::lfoAmount)->Value();
 	if (lfoAmount != 0.0) delayTime = pow(delayTime, 1.0 + lfoAmount * sin(lfoPhase * 2 * pi));
+	auto driftAmount = GetParam(Parameters::driftAmount)->Value();
+	if (driftAmount != 0.0) delayTime = pow(delayTime, 1.0 + driftAmount * sin(driftPhase));
+
 	return delayTime;
 }
 
@@ -197,6 +211,7 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// update modulation
 		lfoPhase += GetParam(Parameters::lfoFrequency)->Value() / GetSampleRate();
 		while (lfoPhase > 1.0) lfoPhase -= 1.0;
+		UpdateDrift();
 
 		// read from buffer
 		auto outL = GetBuffer(bufferL, writePosition - readPositionL);
