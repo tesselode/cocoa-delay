@@ -126,9 +126,11 @@ double Delay::GetDelayTime()
 		case sixtyforth: delayTime = beatLength * 1 / 16; break;
 		case tripletSixtyforth: delayTime = beatLength * 1 / 24; break;
 		}
+		break;
 	}
 	case false:
-		delayTime = GetParam(Parameters::delayTime)->Value(); break;
+		delayTime = GetParam(Parameters::delayTime)->Value();
+		break;
 	}
 
 	// modulation
