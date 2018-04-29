@@ -216,10 +216,6 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// read from buffer
 		auto outL = GetBuffer(bufferL, writePosition - readPositionL);
 		auto outR = GetBuffer(bufferR, writePosition - readPositionR);
-		
-		// feedback volume
-		outL *= GetParam(Parameters::feedback)->Value();
-		outR *= GetParam(Parameters::feedback)->Value();
 
 		// stereo width
 		ChangeStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
@@ -244,8 +240,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		}
 
 		// write to buffer
-		bufferL[writePosition] = inputs[0][s] + outL;
-		bufferR[writePosition] = inputs[1][s] + outR;
+		bufferL[writePosition] = inputs[0][s] + outL * GetParam(Parameters::feedback)->Value();
+		bufferR[writePosition] = inputs[1][s] + outR * GetParam(Parameters::feedback)->Value();
 
 		// increment write position
 		writePosition += 1;
