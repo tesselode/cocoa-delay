@@ -62,9 +62,9 @@ void Delay::InitParameters()
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
-	GetParam(Parameters::lowPass)->InitDouble("Low pass", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, 1.0, .01);
-	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.0, 0.0, 10.0, .01);
+	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
+	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01);
+	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 }
