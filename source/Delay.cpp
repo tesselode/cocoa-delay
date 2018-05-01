@@ -20,7 +20,6 @@ enum Parameters
 	pan,
 	lowPass,
 	highPass,
-	driveStyle,
 	driveAmount,
 	driveEdge,
 	dryVolume,
@@ -66,7 +65,6 @@ void Delay::InitParameters()
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01);
-	GetParam(Parameters::driveStyle)->InitEnum("Drive style", DriveStyles::sinDrive, numDriveStyles);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveEdge)->InitDouble("Drive edge", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
@@ -226,7 +224,6 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		outR -= hpOutR;
 
 		// feedback drive
-		auto driveStyle = (DriveStyles)(int)GetParam(Parameters::driveStyle)->Value();
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
 		auto driveEdge = GetParam(Parameters::driveEdge)->Value();
 		if (driveAmount > 0)

@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-class StatefulDriveA
+class StatefulDrive
 {
 public:
 	double Process(double input, double amount, double edge);

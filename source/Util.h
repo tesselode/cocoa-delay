@@ -43,58 +43,6 @@ inline void adjustPanning(double inL, double inR, double angle, double &outL, do
 	outR = inL * s + inR * c;
 }
 
-enum DriveStyles
-{
-	absDrive,
-	tanhDrive,
-	atanDrive,
-	sqrtDrive,
-	x4Drive,
-	cubicDrive,
-	sinDrive,
-	atanCosDrive,
-	numDriveStyles,
-};
-
-inline double drive(double input, DriveStyles style, double amount, double edge)
-{
-	auto x = input * amount;
-	switch (style)
-	{
-	case absDrive:
-		x = x / (1.0 + abs(x));
-		break;
-	case tanhDrive:
-		x = tanh(x);
-		break;
-	case atanDrive:
-		x = atan(x);
-		break;
-	case sqrtDrive:
-		x = x / sqrt(1.0 + x * x);
-		break;
-	case x4Drive:
-		x = x / (1.0 + x * x * x * x);
-		break;
-	case cubicDrive:
-		if (x <= -1)
-			x = -2.0 / 3.0;
-		else if (x >= 1)
-			x = 2.0 / 3.0;
-		else
-			x = x - (x * x * x) / 3.0;
-		break;
-	case sinDrive:
-		x = sin(x);
-		break;
-	case atanCosDrive:
-		x = atan(x) * cos(x);
-		break;
-	}
-	x /= amount;
-	return input + (x - input) * edge;
-}
-
 // random numbers
 
 // https://stackoverflow.com/questions/1640258/need-a-fast-random-generator-for-c

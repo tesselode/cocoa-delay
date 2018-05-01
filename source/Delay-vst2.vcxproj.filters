@@ -6,7 +6,7 @@
       <Filter>vst2</Filter>
     </ClCompile>
     <ClCompile Include="Filter.cpp" />
-    <ClCompile Include="StatefulDriveA.cpp" />
+    <ClCompile Include="StatefulDrive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Delay.h" />
@@ -16,7 +16,7 @@
     </ClInclude>
     <ClInclude Include="Filter.h" />
     <ClInclude Include="Util.h" />
-    <ClInclude Include="StatefulDriveA.h" />
+    <ClInclude Include="StatefulDrive.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Delay.rc" />
