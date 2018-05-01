@@ -1,9 +1,9 @@
 #include "StatefulDriveA.h"
 
-double StatefulDriveA::Process(double input, double amount)
+double StatefulDriveA::Process(double input, double amount, double edge)
 {
 	double driven = atan(input * amount) / amount;
-	value += (input - value) * .9;
-	value += (driven - value) * .5;
+	value += (input - value) * edge;
+	value += (driven - value) * edge;
 	return value;
 }
