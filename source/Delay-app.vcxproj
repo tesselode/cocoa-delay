@@ -281,6 +281,7 @@
     <ClInclude Include="Delay.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="StatefulDriveA.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +295,7 @@
     <ClCompile Include="app_wrapper\app_main.cpp" />
     <ClCompile Include="Delay.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="StatefulDriveA.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Delay.rc" />

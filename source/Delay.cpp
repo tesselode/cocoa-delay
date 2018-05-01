@@ -231,8 +231,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto driveEdge = GetParam(Parameters::driveEdge)->Value();
 		if (driveAmount > 0)
 		{
-			outL = drive(outL, driveStyle, driveAmount, driveEdge);
-			outR = drive(outR, driveStyle, driveAmount, driveEdge);
+			outL = statefulDrive.Process(outL, driveAmount);
+			outR = statefulDrive.Process(outR, driveAmount);
 		}
 
 		// write to buffer

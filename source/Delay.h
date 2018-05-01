@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "Filter.h"
+#include "StatefulDriveA.h"
 #include "Util.h"
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
@@ -39,6 +40,9 @@ private:
 	// filters
 	Filter lp;
 	Filter hp;
+
+	// drive
+	StatefulDriveA statefulDrive;
 
 	// modulation
 	double lfoPhase = 0.0;
