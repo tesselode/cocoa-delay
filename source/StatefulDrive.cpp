@@ -2,8 +2,8 @@
 
 double StatefulDrive::Process(double input, double amount, double edge)
 {
-	double driven = atan(input * amount) / amount;
 	value += (input - value) * edge;
+	double driven = atan(value * amount) / amount;
 	value += (driven - value) * edge;
 	return value;
 }
