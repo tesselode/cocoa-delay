@@ -3,7 +3,7 @@
 class Filter
 {
 public:
-	void Process(double inL, double inR, double cutoff, double &outL, double &outR);
+	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR);
 
 private:
 	double left = 0.0;

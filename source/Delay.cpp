@@ -216,10 +216,10 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
 
 		// filters
-		lp.Process(outL, outR, GetParam(Parameters::lowPass)->Value(), outL, outR);
+		lp.Process(dt, outL, outR, GetParam(Parameters::lowPass)->Value(), outL, outR);
 		auto hpOutL = 0.0;
 		auto hpOutR = 0.0;
-		hp.Process(outL, outR, GetParam(Parameters::highPass)->Value(), hpOutL, hpOutR);
+		hp.Process(dt, outL, outR, GetParam(Parameters::highPass)->Value(), hpOutL, hpOutR);
 		outL -= hpOutL;
 		outR -= hpOutR;
 
@@ -228,8 +228,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto driveEdge = GetParam(Parameters::driveEdge)->Value();
 		if (driveAmount > 0)
 		{
-			outL = statefulDrive.Process(outL, driveAmount, driveEdge);
-			outR = statefulDrive.Process(outR, driveAmount, driveEdge);
+			outL = statefulDrive.Process(dt, outL, driveAmount, driveEdge);
+			outR = statefulDrive.Process(dt, outR, driveAmount, driveEdge);
 		}
 
 		// write to buffer
