@@ -17,6 +17,7 @@ enum Parameters
 	feedback,
 	stereoOffset,
 	stereoWidth,
+	panMode,
 	pan,
 	lowPass,
 	highPass,
@@ -51,6 +52,14 @@ enum TempoSyncTimes
 	numTempoSyncTimes
 };
 
+enum PanModes
+{
+	stationary,
+	circular,
+	pingPong,
+	numPanModes
+};
+
 void Delay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
@@ -62,6 +71,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
+	GetParam(Parameters::panMode)->InitEnum("Pan mode", PanModes::stationary, PanModes::numPanModes);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01);
@@ -223,8 +233,13 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto outR = GetSample(bufferR, writePosition - readPositionR);
 
 		// panning
-		adjustStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
-		adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
+		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
+		{
+		case PanModes::circular:
+			adjustStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
+			adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
+			break;
+		}
 
 		// filters
 		lp.Process(dt, outL, outR, GetParam(Parameters::lowPass)->Value(), false, outL, outR);
@@ -240,8 +255,19 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		}
 
 		// write to buffer
-		bufferL[writePosition] = inputs[0][s] + outL * GetParam(Parameters::feedback)->Value();
-		bufferR[writePosition] = inputs[1][s] + outR * GetParam(Parameters::feedback)->Value();
+		auto writeL = 0.0, writeR = 0.0;
+		writeL += inputs[0][s];
+		writeR += inputs[1][s];
+		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
+		{
+		case stationary:
+			adjustPanning(writeL, writeR, GetParam(Parameters::pan)->Value() * .5, writeL, writeR);
+			break;
+		}
+		writeL += outL * GetParam(Parameters::feedback)->Value();
+		writeR += outR * GetParam(Parameters::feedback)->Value();
+		bufferL[writePosition] = writeL;
+		bufferR[writePosition] = writeR;
 		UpdateWritePosition();
 
 		// output
