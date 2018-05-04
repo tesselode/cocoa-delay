@@ -55,8 +55,8 @@ enum TempoSyncTimes
 enum PanModes
 {
 	stationary,
-	circular,
 	pingPong,
+	circular,
 	numPanModes
 };
 
@@ -260,14 +260,24 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		writeR += inputs[1][s];
 		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
 		{
-		case stationary:
+		case PanModes::stationary:
+		case PanModes::pingPong:
 			adjustPanning(writeL, writeR, GetParam(Parameters::pan)->Value() * .5, writeL, writeR);
 			break;
 		}
 		writeL += outL * GetParam(Parameters::feedback)->Value();
 		writeR += outR * GetParam(Parameters::feedback)->Value();
-		bufferL[writePosition] = writeL;
-		bufferR[writePosition] = writeR;
+		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
+		{
+		case PanModes::pingPong:
+			bufferL[writePosition] = writeR;
+			bufferR[writePosition] = writeL;
+			break;
+		default:
+			bufferL[writePosition] = writeL;
+			bufferR[writePosition] = writeR;
+			break;
+		}
 		UpdateWritePosition();
 
 		// output
