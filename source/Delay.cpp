@@ -167,6 +167,26 @@ void Delay::InitBuffer()
 	GetReadPositions(readPositionL, readPositionR);
 }
 
+void Delay::UpdateReadPositions()
+{
+	double targetReadPositionL, targetReadPositionR;
+	GetReadPositions(targetReadPositionL, targetReadPositionR);
+	readPositionL += (targetReadPositionL - readPositionL) * 10.0 * dt;
+	readPositionR += (targetReadPositionR - readPositionR) * 10.0 * dt;
+}
+
+void Delay::UpdateWritePosition()
+{
+	writePosition += 1;
+	writePosition %= std::size(bufferL);
+}
+
+void Delay::UpdateLfo()
+{
+	lfoPhase += GetParam(Parameters::lfoFrequency)->Value() * dt;
+	while (lfoPhase > 1.0) lfoPhase -= 1.0;
+}
+
 void Delay::UpdateDrift()
 {
 	driftVelocity += random() * 10000.0 * dt;
@@ -194,36 +214,23 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 {
 	for (int s = 0; s < nFrames; s++)
 	{
-		// update read positions
-		double targetReadPositionL, targetReadPositionR;
-		GetReadPositions(targetReadPositionL, targetReadPositionR);
-		readPositionL += (targetReadPositionL - readPositionL) * 10.0 * dt;
-		readPositionR += (targetReadPositionR - readPositionR) * 10.0 * dt;
-
-		// update modulation
-		lfoPhase += GetParam(Parameters::lfoFrequency)->Value() * dt;
-		while (lfoPhase > 1.0) lfoPhase -= 1.0;
+		UpdateReadPositions();
+		UpdateLfo();
 		UpdateDrift();
 
 		// read from buffer
 		auto outL = GetSample(bufferL, writePosition - readPositionL);
 		auto outR = GetSample(bufferR, writePosition - readPositionR);
 
-		// stereo width
-		adjustStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
-
 		// panning
+		adjustStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
 		adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
 
 		// filters
-		lp.Process(dt, outL, outR, GetParam(Parameters::lowPass)->Value(), outL, outR);
-		auto hpOutL = 0.0;
-		auto hpOutR = 0.0;
-		hp.Process(dt, outL, outR, GetParam(Parameters::highPass)->Value(), hpOutL, hpOutR);
-		outL -= hpOutL;
-		outR -= hpOutR;
+		lp.Process(dt, outL, outR, GetParam(Parameters::lowPass)->Value(), false, outL, outR);
+		hp.Process(dt, outL, outR, GetParam(Parameters::highPass)->Value(), true, outL, outR);
 
-		// feedback drive
+		// drive
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
 		auto driveEdge = GetParam(Parameters::driveEdge)->Value();
 		if (driveAmount > 0)
@@ -235,10 +242,7 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// write to buffer
 		bufferL[writePosition] = inputs[0][s] + outL * GetParam(Parameters::feedback)->Value();
 		bufferR[writePosition] = inputs[1][s] + outR * GetParam(Parameters::feedback)->Value();
-
-		// increment write position
-		writePosition += 1;
-		writePosition %= std::size(bufferL);
+		UpdateWritePosition();
 
 		// output
 		auto dry = GetParam(Parameters::dryVolume)->Value();

@@ -25,6 +25,9 @@ private:
 	double GetDelayTime();
 	void GetReadPositions(double & l, double & r);
 	void InitBuffer();
+	void UpdateReadPositions();
+	void UpdateWritePosition();
+	void UpdateLfo();
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
 
