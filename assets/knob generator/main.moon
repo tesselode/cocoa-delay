@@ -1,4 +1,6 @@
+knobRadius = .43333333
 scale = 64
+buffer = .25
 
 color =
 	body: {196/255, 212/255, 230/255}
@@ -10,27 +12,27 @@ drawKnob = (angle, originAngle) -> with love.graphics
 	originAngle = math.rad originAngle
 	.push 'all'
 	.setColor color.body
-	.circle 'fill', .5, .5, .5, 64
+	.circle 'fill', .5, .5, knobRadius, 64
 	.setColor color.gray
 	.setLineWidth 1/8
-	.circle 'line', .5, .5, .5, 64
+	.circle 'line', .5, .5, knobRadius, 64
 	.setColor color.accent
 	.circle 'fill', .5 + .2 * math.cos(angle), .5 + .2 * math.sin(angle), 1/16, 64
-	.arc 'line', 'open', .5, .5, .5, angle, originAngle, 64
+	.arc 'line', 'open', .5, .5, knobRadius, angle, originAngle, 64
 	.pop!
 
 drawKnobStrip = (originAngle) -> with love.graphics
 	.push 'all'
-	.translate .25, .25
+	.translate buffer, buffer
 	for angle = -215, 45, 5
 		drawKnob angle, originAngle
-		.translate 0, 1.25
+		.translate 0, 1 + 2 * buffer
 	.pop!
 
 exportKnobStrip = (originAngle, filename) -> with love.graphics
 	frames = (45 + 215) / 5 + 1
-	width = scale * 1.5
-	height = scale * (frames * 1.25 + .25)
+	width = scale * (1 + 2 * buffer)
+	height = scale * (frames * (1 + 2 * buffer))
 	canvas = .newCanvas width, height,
 		msaa: 16
 	canvas\renderTo ->
@@ -40,9 +42,9 @@ exportKnobStrip = (originAngle, filename) -> with love.graphics
 		.pop!
 	canvas\newImageData!\encode 'png', filename .. '.png'
 
-exportKnobStrip -215, 'left'
-exportKnobStrip -90, 'middle'
-exportKnobStrip 45, 'right'
+exportKnobStrip -215, 'knob left'
+exportKnobStrip -90, 'knob middle'
+exportKnobStrip 45, 'knob right'
 
 love.draw = -> with love.graphics
 	.push 'all'
