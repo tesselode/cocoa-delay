@@ -15,7 +15,7 @@ inline int wrap(int kX, int const kLowerBound, int const kUpperBound)
 	return kLowerBound + (kX - kLowerBound) % range_size;
 }
 
-// musicdsp.org hermite interpolation
+// http://musicdsp.org/archive.php?classid=5#93
 inline float interpolate(float x, float y0, float y1, float y2, float y3)
 {
 	// 4-point, 3rd-order Hermite (x-form) 
