@@ -1,0 +1,2 @@
+moonc .
+love --console .
