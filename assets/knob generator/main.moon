@@ -1,3 +1,5 @@
+scale = 64
+
 color =
 	body: {196/255, 212/255, 230/255}
 	gray: {103/255, 125/255, 147/255}
@@ -24,6 +26,23 @@ drawKnobStrip = (originAngle) -> with love.graphics
 		drawKnob angle, originAngle
 		.translate 0, 1.25
 	.pop!
+
+exportKnobStrip = (originAngle, filename) -> with love.graphics
+	frames = (45 + 215) / 5 + 1
+	width = scale * 1.5
+	height = scale * (frames * 1.25 + .25)
+	canvas = .newCanvas width, height,
+		msaa: 16
+	canvas\renderTo ->
+		.push 'all'
+		.scale scale
+		drawKnobStrip originAngle
+		.pop!
+	canvas\newImageData!\encode 'png', filename .. '.png'
+
+exportKnobStrip -215, 'left'
+exportKnobStrip -90, 'middle'
+exportKnobStrip 45, 'right'
 
 love.draw = -> with love.graphics
 	.push 'all'
