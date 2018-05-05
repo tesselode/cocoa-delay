@@ -87,17 +87,17 @@ void Delay::InitGraphics()
 	pGraphics->AttachBackground(BG_ID, BG_FN);
 
 	auto knobLeft = pGraphics->LoadIBitmap(KNOBLEFT_ID, KNOBLEFT_FN, 53);
-	auto knobMiddle = pGraphics->LoadIBitmap(KNOBMIDDLE_ID, KNOBMIDDLE_FN, 54);
-	auto knobRight = pGraphics->LoadIBitmap(KNOBRIGHT_ID, KNOBRIGHT_FN, 54);
+	auto knobMiddle = pGraphics->LoadIBitmap(KNOBMIDDLE_ID, KNOBMIDDLE_FN, 53);
+	auto knobRight = pGraphics->LoadIBitmap(KNOBRIGHT_ID, KNOBRIGHT_FN, 53);
 
 	pGraphics->AttachControl(new IKnobMultiControl(this, 20 * 4, 34 * 4, Parameters::delayTime, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 88 * 4, 34 * 4, Parameters::feedback, &knobLeft));
-	pGraphics->AttachControl(new IKnobMultiControl(this, 108 * 4, 34 * 4, Parameters::stereoOffset, &knobLeft));
-	pGraphics->AttachControl(new IKnobMultiControl(this, 128 * 4, 34 * 4, Parameters::pan, &knobLeft));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 108 * 4, 34 * 4, Parameters::stereoOffset, &knobMiddle));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 128 * 4, 34 * 4, Parameters::pan, &knobMiddle));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 4.25 * 4, 72 * 4, Parameters::lfoAmount, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 24.25 * 4, 72 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 52 * 4, 72 * 4, Parameters::driftAmount, &knobLeft));
-	pGraphics->AttachControl(new IKnobMultiControl(this, 84 * 4, 72 * 4, Parameters::lowPass, &knobLeft));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 84 * 4, 72 * 4, Parameters::lowPass, &knobRight));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 104 * 4, 72 * 4, Parameters::highPass, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 132 * 4, 72 * 4, Parameters::driveAmount, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 152 * 4, 72 * 4, Parameters::driveEdge, &knobLeft));
