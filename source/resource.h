@@ -61,12 +61,16 @@ instrument determined by PLUG _IS _INST
 #define KNOBLEFT_ID 102
 #define KNOBMIDDLE_ID 103
 #define KNOBRIGHT_ID 104
+#define TEMPOSYNCTIMESMENU_ID 105
+#define PANMODESMENU_ID 106
 
 // Image resource locations for this plug.
 #define BG_FN "resources/img/bg.png"
 #define KNOBLEFT_FN "resources/img/knob left.png"
 #define KNOBMIDDLE_FN "resources/img/knob middle.png"
 #define KNOBRIGHT_FN "resources/img/knob right.png"
+#define TEMPOSYNCTIMESMENU_FN "resources/img/tempo sync times.png"
+#define PANMODESMENU_FN "resources/img/pan modes.png"
 
 // GUI default dimensions
 #define GUI_WIDTH 180*4

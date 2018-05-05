@@ -31,6 +31,7 @@ private:
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
 
+	IGraphics* pGraphics;
 	double dt = 0.0;
 
 	// delay

@@ -12,7 +12,6 @@ enum Parameters
 	lfoAmount,
 	lfoFrequency,
 	driftAmount,
-	tempoSync,
 	tempoSyncTime,
 	feedback,
 	stereoOffset,
@@ -30,6 +29,7 @@ enum Parameters
 
 enum TempoSyncTimes
 {
+	tempoSyncOff,
 	whole,
 	dottedHalf,
 	half,
@@ -66,8 +66,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::lfoAmount)->InitDouble("LFO amount", 0.0, 0.0, .5, .01, "", "", 2.0);
 	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
 	GetParam(Parameters::driftAmount)->InitDouble("Drift amount", .001, 0.0, .05, .01, "", "", 2.0);
-	GetParam(Parameters::tempoSync)->InitBool("Tempo sync", false);
-	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::quarter, TempoSyncTimes::numTempoSyncTimes);
+	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::tempoSyncOff, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
@@ -83,17 +82,21 @@ void Delay::InitParameters()
 
 void Delay::InitGraphics()
 {
-	IGraphics* pGraphics = MakeGraphics(this, GUI_WIDTH, GUI_HEIGHT, 120);
+	pGraphics = MakeGraphics(this, GUI_WIDTH, GUI_HEIGHT, 120);
 	pGraphics->AttachBackground(BG_ID, BG_FN);
 
 	auto knobLeft = pGraphics->LoadIBitmap(KNOBLEFT_ID, KNOBLEFT_FN, 53);
 	auto knobMiddle = pGraphics->LoadIBitmap(KNOBMIDDLE_ID, KNOBMIDDLE_FN, 53);
 	auto knobRight = pGraphics->LoadIBitmap(KNOBRIGHT_ID, KNOBRIGHT_FN, 53);
+	auto tempoSyncTimesMenu = pGraphics->LoadIBitmap(TEMPOSYNCTIMESMENU_ID, TEMPOSYNCTIMESMENU_FN, numTempoSyncTimes);
+	auto panModesMenu = pGraphics->LoadIBitmap(PANMODESMENU_ID, PANMODESMENU_FN, numPanModes);
 
 	pGraphics->AttachControl(new IKnobMultiControl(this, 20 * 4, 34 * 4, Parameters::delayTime, &knobLeft));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 44 * 4, 41 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu, kVertical, 16.0));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 88 * 4, 34 * 4, Parameters::feedback, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 108 * 4, 34 * 4, Parameters::stereoOffset, &knobMiddle));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 128 * 4, 34 * 4, Parameters::pan, &knobMiddle));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 152 * 4, 41 * 4, Parameters::panMode, &panModesMenu, kVertical, 4.0));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 4.25 * 4, 72 * 4, Parameters::lfoAmount, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 24.25 * 4, 72 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 52 * 4, 72 * 4, Parameters::driftAmount, &knobLeft));
@@ -125,38 +128,31 @@ Delay::~Delay() {}
 double Delay::GetDelayTime()
 {
 	double delayTime = 0.0;
-	switch ((bool)GetParam(Parameters::tempoSync)->Value())
+	auto beatLength = 60 / GetTempo();
+	switch ((TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value())
 	{
-	case true:
-	{
-		auto beatLength = 60 / GetTempo();
-		switch ((TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value())
-		{
-		case whole: delayTime = beatLength * 4; break;
-		case dottedHalf: delayTime = beatLength * 3; break;
-		case half: delayTime = beatLength * 2; break;
-		case tripletHalf: delayTime = beatLength * 4 / 3; break;
-		case dottedQuarter: delayTime = beatLength * 3 / 2; break;
-		case quarter: delayTime = beatLength * 1; break;
-		case tripletQuarter: delayTime = beatLength * 2 / 3; break;
-		case dottedEighth: delayTime = beatLength * 3 / 4; break;
-		case eighth: delayTime = beatLength * 1 / 2; break;
-		case tripletEighth: delayTime = beatLength * 1 / 3; break;
-		case dottedSixteenth: delayTime = beatLength * 3 / 8; break;
-		case sixteenth: delayTime = beatLength * 1 / 4; break;
-		case tripletSixteenth: delayTime = beatLength * 1 / 6; break;
-		case dottedThirtysecond: delayTime = beatLength * 3 / 16; break;
-		case thirtysecond: delayTime = beatLength * 1 / 8; break;
-		case tripletThirtysecond: delayTime = beatLength * 1 / 12; break;
-		case dottedSixtyforth: delayTime = beatLength * 3 / 32; break;
-		case sixtyforth: delayTime = beatLength * 1 / 16; break;
-		case tripletSixtyforth: delayTime = beatLength * 1 / 24; break;
-		}
-		break;
-	}
-	case false:
+	case tempoSyncOff:
 		delayTime = GetParam(Parameters::delayTime)->Value();
 		break;
+	case whole: delayTime = beatLength * 4; break;
+	case dottedHalf: delayTime = beatLength * 3; break;
+	case half: delayTime = beatLength * 2; break;
+	case tripletHalf: delayTime = beatLength * 4 / 3; break;
+	case dottedQuarter: delayTime = beatLength * 3 / 2; break;
+	case quarter: delayTime = beatLength * 1; break;
+	case tripletQuarter: delayTime = beatLength * 2 / 3; break;
+	case dottedEighth: delayTime = beatLength * 3 / 4; break;
+	case eighth: delayTime = beatLength * 1 / 2; break;
+	case tripletEighth: delayTime = beatLength * 1 / 3; break;
+	case dottedSixteenth: delayTime = beatLength * 3 / 8; break;
+	case sixteenth: delayTime = beatLength * 1 / 4; break;
+	case tripletSixteenth: delayTime = beatLength * 1 / 6; break;
+	case dottedThirtysecond: delayTime = beatLength * 3 / 16; break;
+	case thirtysecond: delayTime = beatLength * 1 / 8; break;
+	case tripletThirtysecond: delayTime = beatLength * 1 / 12; break;
+	case dottedSixtyforth: delayTime = beatLength * 3 / 32; break;
+	case sixtyforth: delayTime = beatLength * 1 / 16; break;
+	case tripletSixtyforth: delayTime = beatLength * 1 / 24; break;
 	}
 
 	// modulation
@@ -313,4 +309,14 @@ void Delay::Reset()
 void Delay::OnParamChange(int paramIdx)
 {
 	IMutexLock lock(this);
+
+	switch (paramIdx)
+	{
+	case Parameters::tempoSyncTime:
+	{
+		auto tempoSyncTime = (TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value();
+		pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
+		break;
+	}
+	}
 }
