@@ -15,7 +15,6 @@ enum Parameters
 	tempoSyncTime,
 	feedback,
 	stereoOffset,
-	stereoWidth,
 	panMode,
 	pan,
 	lowPass,
@@ -69,7 +68,6 @@ void Delay::InitParameters()
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::tempoSyncOff, TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
-	GetParam(Parameters::stereoWidth)->InitDouble("Stereo width", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::panMode)->InitEnum("Pan mode", PanModes::stationary, PanModes::numPanModes);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
@@ -248,7 +246,6 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
 		{
 		case PanModes::circular:
-			adjustStereoWidth(outL, outR, GetParam(Parameters::stereoWidth)->Value(), outL, outR);
 			adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
 			break;
 		}
