@@ -263,6 +263,10 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 			outR = statefulDrive.Process(dt, outR, driveAmount, driveEdge);
 		}
 
+		// dc filtering
+		outL = dcFilterL.Process(outL);
+		outR = dcFilterR.Process(outR);
+
 		// write to buffer
 		auto writeL = 0.0, writeR = 0.0;
 		writeL += inputs[0][s];

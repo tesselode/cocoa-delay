@@ -2,6 +2,7 @@
 #define __DELAY__
 
 #include <cmath>
+#include "DcFilter.h"
 #include "Filter.h"
 #include "StatefulDrive.h"
 #include "Util.h"
@@ -47,6 +48,10 @@ private:
 
 	// drive
 	StatefulDrive statefulDrive;
+
+	// dc filters
+	DcFilter dcFilterL;
+	DcFilter dcFilterR;
 
 	// modulation
 	double lfoPhase = 0.0;
