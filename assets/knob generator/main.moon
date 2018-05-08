@@ -4,7 +4,7 @@ buffer = .25
 
 color =
 	body: {196/255, 212/255, 230/255}
-	gray: {103/255, 125/255, 147/255}
+	gray: {58/255, 84/255, 110/255}
 	accent: {52/255, 131/255, 209/255}
 
 drawKnob = (angle, originAngle) -> with love.graphics
