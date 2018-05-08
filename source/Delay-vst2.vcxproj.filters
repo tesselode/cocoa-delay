@@ -7,6 +7,7 @@
     </ClCompile>
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="StatefulDrive.cpp" />
+    <ClCompile Include="Knob.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Delay.h" />
@@ -17,6 +18,7 @@
     <ClInclude Include="Filter.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="StatefulDrive.h" />
+    <ClInclude Include="Knob.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Delay.rc" />

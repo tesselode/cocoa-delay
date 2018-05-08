@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "Filter.h"
+#include "Knob.h"
 #include "StatefulDrive.h"
 #include "Util.h"
 #include <vector>
