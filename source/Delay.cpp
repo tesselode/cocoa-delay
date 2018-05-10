@@ -9,6 +9,8 @@ const int tapeLength = 10;
 enum Parameters
 {
 	delayTime,
+	envAmount,
+	envSpeed,
 	lfoAmount,
 	lfoFrequency,
 	driftAmount,
@@ -62,6 +64,8 @@ enum PanModes
 void Delay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
+	GetParam(Parameters::envAmount)->InitDouble("Envelope amount", 0.0, -.9, .9, .01, "", "", 1.0);
+	GetParam(Parameters::envSpeed)->InitDouble("Envelope speed", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::lfoAmount)->InitDouble("LFO amount", 0.0, 0.0, .5, .01, "", "", 2.0);
 	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
 	GetParam(Parameters::driftAmount)->InitDouble("Drift amount", .001, 0.0, .05, .01, "", "", 2.0);
@@ -156,6 +160,8 @@ double Delay::GetDelayTime()
 	}
 
 	// modulation
+	auto envAmount = GetParam(Parameters::envAmount)->Value();
+	if (envAmount != 0.0) delayTime = pow(delayTime, 1.0 + envAmount * envValue);
 	auto lfoAmount = GetParam(Parameters::lfoAmount)->Value();
 	if (lfoAmount != 0.0) delayTime = pow(delayTime, 1.0 + lfoAmount * sin(lfoPhase * 2 * pi));
 	auto driftAmount = GetParam(Parameters::driftAmount)->Value();
@@ -201,6 +207,12 @@ void Delay::UpdateWritePosition()
 	writePosition %= std::size(bufferL);
 }
 
+void Delay::UpdateEnvelope(double input)
+{
+	auto speed = GetParam(Parameters::envSpeed)->Value();
+	envValue += (abs(input) - envValue) * speed * dt;
+}
+
 void Delay::UpdateLfo()
 {
 	lfoPhase += GetParam(Parameters::lfoFrequency)->Value() * dt;
@@ -235,6 +247,7 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 	for (int s = 0; s < nFrames; s++)
 	{
 		UpdateReadPositions();
+		UpdateEnvelope(inputs[0][s] + inputs[1][s]);
 		UpdateLfo();
 		UpdateDrift();
 
