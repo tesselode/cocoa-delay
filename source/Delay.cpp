@@ -100,7 +100,7 @@ void Delay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 172 * 4, 18 * 4, Parameters::pan, &knobMiddle));
 	pGraphics->AttachControl(new IKnobMultiControl(this, 196 * 4, 25 * 4, Parameters::panMode, &panModesMenu, kVertical, 4.0));
 	pGraphics->AttachControl(new Knob(this, 76 * 4, 18 * 4, Parameters::envAmount, &knobMiddle));
-	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::envSpeed, &knobMiddle));
+	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::envSpeed, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::lfoAmount, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 86 * 4, 56 * 4, Parameters::driftAmount, &knobLeft));
