@@ -89,8 +89,8 @@ void Delay::InitGraphics()
 	auto tempoSyncTimesMenu = pGraphics->LoadIBitmap(TEMPOSYNCTIMESMENU_ID, TEMPOSYNCTIMESMENU_FN, numTempoSyncTimes);
 	auto panModesMenu = pGraphics->LoadIBitmap(PANMODESMENU_ID, PANMODESMENU_FN, numPanModes);
 
-	pGraphics->AttachControl(new Knob(this, 44 * 4, 17 * 4, Parameters::delayTime, &knobLeft));
-	pGraphics->AttachControl(new IKnobMultiControl(this, 68 * 4, 25 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu, kVertical, 16.0));
+	pGraphics->AttachControl(new Knob(this, 42 * 4, 17 * 4, Parameters::delayTime, &knobLeft));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 66 * 4, 25 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu, kVertical, 16.0));
 	pGraphics->AttachControl(new Knob(this, 112 * 4, 17 * 4, Parameters::feedback, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 132 * 4, 18 * 4, Parameters::stereoOffset, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 152 * 4, 18 * 4, Parameters::pan, &knobMiddle));
