@@ -77,7 +77,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
-	GetParam(Parameters::driveEdge)->InitDouble("Drive edge", 1.0, 0.0, 1.0, .01);
+	GetParam(Parameters::driveEdge)->InitDouble("Drive edge", 1.0, 0.1, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 }
