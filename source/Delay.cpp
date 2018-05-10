@@ -332,5 +332,14 @@ void Delay::OnParamChange(int paramIdx)
 		pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
 		break;
 	}
+	case Parameters::envAmount:
+		pGraphics->GetControl(8)->GrayOut(GetParam(Parameters::envAmount)->Value() == 0.0);
+		break;
+	case Parameters::lfoAmount:
+		pGraphics->GetControl(10)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
+		break;
+	case Parameters::driveAmount:
+		pGraphics->GetControl(15)->GrayOut(GetParam(Parameters::driveAmount)->Value() == 0.0);
+		break;
 	}
 }
