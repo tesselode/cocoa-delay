@@ -73,7 +73,7 @@ instrument determined by PLUG _IS _INST
 #define PANMODESMENU_FN "resources/img/pan modes.png"
 
 // GUI default dimensions
-#define GUI_WIDTH 204*4
+#define GUI_WIDTH 224*4
 #define GUI_HEIGHT 84*4
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones
