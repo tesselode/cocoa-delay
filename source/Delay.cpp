@@ -53,14 +53,6 @@ enum TempoSyncTimes
 	numTempoSyncTimes
 };
 
-enum PanModes
-{
-	stationary,
-	pingPong,
-	circular,
-	numPanModes
-};
-
 void Delay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
@@ -209,6 +201,32 @@ void Delay::UpdateWritePosition()
 	writePosition %= std::size(bufferL);
 }
 
+void Delay::UpdateParameters()
+{
+	// pan mode fadeout
+	if (currentPanMode != (PanModes)(int)GetParam(Parameters::panMode)->Value())
+	{
+		parameterChangeVolume -= 100.0 * dt;
+		if (parameterChangeVolume <= 0.0)
+		{
+			parameterChangeVolume = 0.0;
+			currentPanMode = (PanModes)(int)GetParam(Parameters::panMode)->Value();
+		}
+	}
+	else if (parameterChangeVolume < 1.0)
+	{
+		parameterChangeVolume += 100.0 * dt;
+		if (parameterChangeVolume > 1.0) parameterChangeVolume = 1.0;
+	}
+
+	// pan amount smoothing
+	auto panAmount = GetParam(Parameters::pan)->Value();
+	auto stationaryPanAmountTarget = (currentPanMode == PanModes::stationary || currentPanMode == PanModes::pingPong) ? panAmount : 0.0;
+	stationaryPanAmount += (stationaryPanAmountTarget - stationaryPanAmount) * 100.0 * dt;
+	auto circularPanAmountTarget = (currentPanMode == PanModes::circular ? panAmount : 0.0);
+	circularPanAmount += (circularPanAmountTarget - circularPanAmount) * 100.0 * dt;
+}
+
 void Delay::UpdateEnvelope(double input)
 {
 	auto speed = GetParam(Parameters::envSpeed)->Value();
@@ -248,6 +266,7 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 {
 	for (int s = 0; s < nFrames; s++)
 	{
+		UpdateParameters();
 		UpdateReadPositions();
 		UpdateEnvelope(inputs[0][s] + inputs[1][s]);
 		UpdateLfo();
@@ -257,13 +276,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto outL = GetSample(bufferL, writePosition - readPositionL);
 		auto outR = GetSample(bufferR, writePosition - readPositionR);
 
-		// panning
-		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
-		{
-		case PanModes::circular:
-			adjustPanning(outL, outR, GetParam(Parameters::pan)->Value(), outL, outR);
-			break;
-		}
+		// circular panning
+		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
 		lp.Process(dt, outL, outR, GetParam(Parameters::lowPass)->Value(), false, outL, outR);
@@ -282,24 +296,18 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		auto writeL = 0.0, writeR = 0.0;
 		writeL += inputs[0][s];
 		writeR += inputs[1][s];
-		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
-		{
-		case PanModes::stationary:
-		case PanModes::pingPong:
-			adjustPanning(writeL, writeR, GetParam(Parameters::pan)->Value() * .5, writeL, writeR);
-			break;
-		}
+		adjustPanning(writeL, writeR, stationaryPanAmount * .5, writeL, writeR);
 		writeL += outL * GetParam(Parameters::feedback)->Value();
 		writeR += outR * GetParam(Parameters::feedback)->Value();
-		switch ((PanModes)(int)GetParam(Parameters::panMode)->Value())
+		switch (currentPanMode)
 		{
 		case PanModes::pingPong:
-			bufferL[writePosition] = writeR;
-			bufferR[writePosition] = writeL;
+			bufferL[writePosition] = writeR * parameterChangeVolume;
+			bufferR[writePosition] = writeL * parameterChangeVolume;
 			break;
 		default:
-			bufferL[writePosition] = writeL;
-			bufferR[writePosition] = writeR;
+			bufferL[writePosition] = writeL * parameterChangeVolume;
+			bufferR[writePosition] = writeR * parameterChangeVolume;
 			break;
 		}
 		UpdateWritePosition();

@@ -9,6 +9,14 @@
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
 
+enum PanModes
+{
+	stationary,
+	pingPong,
+	circular,
+	numPanModes
+};
+
 class Delay : public IPlug
 {
 public:
@@ -28,6 +36,7 @@ private:
 	void InitBuffer();
 	void UpdateReadPositions();
 	void UpdateWritePosition();
+	void UpdateParameters();
 	void UpdateEnvelope(double input);
 	void UpdateLfo();
 	void UpdateDrift();
@@ -42,6 +51,12 @@ private:
 	int writePosition;
 	double readPositionL;
 	double readPositionR;
+
+	// fading parameters
+	PanModes currentPanMode = PanModes::stationary;
+	double parameterChangeVolume = 1.0;
+	double stationaryPanAmount = 0.0;
+	double circularPanAmount = 0.0;
 
 	// filters
 	Filter lp;
