@@ -72,6 +72,33 @@ void Delay::InitParameters()
 	GetParam(Parameters::driveEdge)->InitDouble("Drive edge", 1.0, 0.1, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
+
+	// tempo sync time display text
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tempoSyncOff, "Off");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::dottedEighth, "1/8D");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::dottedHalf, "1/2D");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::dottedQuarter, "1/4D");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::dottedSixteenth, "1/16D");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::dottedSixtyforth, "1/64D");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::dottedThirtysecond, "1/32D");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::eighth, "1/8");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::half, "1/2");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::quarter, "1/4");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::sixteenth, "1/16");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::sixtyforth, "1/64");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::thirtysecond, "1/32");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tripletEighth, "1/8T");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tripletHalf, "1/2T");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tripletQuarter, "1/4T");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tripletSixteenth, "1/16T");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tripletSixtyforth, "1/64T");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::tripletThirtysecond, "1/32T");
+	GetParam(Parameters::tempoSyncTime)->SetDisplayText(TempoSyncTimes::whole, "1");
+
+	// pan mode display text
+	GetParam(Parameters::panMode)->SetDisplayText(PanModes::stationary, "Static");
+	GetParam(Parameters::panMode)->SetDisplayText(PanModes::circular, "Circular");
+	GetParam(Parameters::panMode)->SetDisplayText(PanModes::pingPong, "Ping pong");
 }
 
 void Delay::InitGraphics()
@@ -86,11 +113,11 @@ void Delay::InitGraphics()
 	auto panModesMenu = pGraphics->LoadIBitmap(PANMODESMENU_ID, PANMODESMENU_FN, numPanModes);
 
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 17 * 4, Parameters::delayTime, &knobLeft));
-	pGraphics->AttachControl(new IKnobMultiControl(this, 52 * 4, 25 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu, kVertical, 16.0));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 52 * 4, 25 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu));
 	pGraphics->AttachControl(new Knob(this, 132 * 4, 17 * 4, Parameters::feedback, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 152 * 4, 18 * 4, Parameters::stereoOffset, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 172 * 4, 18 * 4, Parameters::pan, &knobMiddle));
-	pGraphics->AttachControl(new IKnobMultiControl(this, 196 * 4, 25 * 4, Parameters::panMode, &panModesMenu, kVertical, 4.0));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 196 * 4, 25 * 4, Parameters::panMode, &panModesMenu));
 	pGraphics->AttachControl(new Knob(this, 76 * 4, 18 * 4, Parameters::envAmount, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::envSpeed, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::lfoAmount, &knobLeft));
