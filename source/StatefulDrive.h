@@ -5,9 +5,9 @@
 class StatefulDrive
 {
 public:
-	double Process(double dt, double input, double amount, double edge);
+	double Process(double input);
 
 private:
-	double value = 0.0;
+	double previous = 0.0;
 };
 

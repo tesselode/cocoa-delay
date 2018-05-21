@@ -63,7 +63,8 @@ private:
 	Filter hp;
 
 	// drive
-	StatefulDrive statefulDrive;
+	StatefulDrive statefulDriveL;
+	StatefulDrive statefulDriveR;
 
 	// modulation
 	double envValue = 0.0;

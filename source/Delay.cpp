@@ -22,7 +22,6 @@ enum Parameters
 	lowPass,
 	highPass,
 	driveAmount,
-	driveEdge,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -69,7 +68,6 @@ void Delay::InitParameters()
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
-	GetParam(Parameters::driveEdge)->InitDouble("Drive edge", 1.0, 0.1, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -126,7 +124,6 @@ void Delay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 128 * 4, 56 * 4, Parameters::lowPass, &knobRight));
 	pGraphics->AttachControl(new Knob(this, 148 * 4, 56 * 4, Parameters::highPass, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 176 * 4, 56 * 4, Parameters::driveAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 196 * 4, 56 * 4, Parameters::driveEdge, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 32 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 56 * 4, Parameters::wetVolume, &knobLeft));
 
@@ -312,11 +309,10 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
-		auto driveEdge = GetParam(Parameters::driveEdge)->Value();
 		if (driveAmount > 0)
 		{
-			outL = statefulDrive.Process(dt, outL, driveAmount, driveEdge);
-			outR = statefulDrive.Process(dt, outR, driveAmount, driveEdge);
+			outL = statefulDriveL.Process(outL * driveAmount) / driveAmount;
+			outR = statefulDriveR.Process(outR * driveAmount) / driveAmount;
 		}
 
 		// write to buffer
@@ -372,9 +368,6 @@ void Delay::OnParamChange(int paramIdx)
 		break;
 	case Parameters::lfoAmount:
 		pGraphics->GetControl(10)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
-		break;
-	case Parameters::driveAmount:
-		pGraphics->GetControl(15)->GrayOut(GetParam(Parameters::driveAmount)->Value() == 0.0);
 		break;
 	}
 }

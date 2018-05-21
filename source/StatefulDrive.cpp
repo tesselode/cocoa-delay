@@ -1,11 +1,9 @@
 #include "StatefulDrive.h"
 
-double StatefulDrive::Process(double dt, double input, double amount, double edge)
+double StatefulDrive::Process(double input)
 {
-	edge *= 44100 * dt;
-	edge = edge > 1.0 ? 1.0 : edge;
-	value += (input - value) * edge;
-	double driven = atan(value * amount) / amount;
-	value += (driven - value) * edge;
-	return value;
+	auto driven = sin(input);
+	auto mix = fabs(previous + driven) * .5;
+	previous = driven;
+	return input * (1.0 - mix) + driven * mix;
 }
