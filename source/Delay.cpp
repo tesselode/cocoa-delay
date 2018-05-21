@@ -112,18 +112,18 @@ void Delay::InitGraphics()
 
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 17 * 4, Parameters::delayTime, &knobLeft));
 	pGraphics->AttachControl(new ISwitchPopUpControl(this, 52 * 4, 25 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu));
-	pGraphics->AttachControl(new Knob(this, 132 * 4, 17 * 4, Parameters::feedback, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 152 * 4, 18 * 4, Parameters::stereoOffset, &knobMiddle));
-	pGraphics->AttachControl(new Knob(this, 172 * 4, 18 * 4, Parameters::pan, &knobMiddle));
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 196 * 4, 25 * 4, Parameters::panMode, &panModesMenu));
+	pGraphics->AttachControl(new Knob(this, 128 * 4, 17 * 4, Parameters::feedback, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 148 * 4, 18 * 4, Parameters::stereoOffset, &knobMiddle));
+	pGraphics->AttachControl(new Knob(this, 168 * 4, 18 * 4, Parameters::pan, &knobMiddle));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 192 * 4, 25 * 4, Parameters::panMode, &panModesMenu));
 	pGraphics->AttachControl(new Knob(this, 76 * 4, 18 * 4, Parameters::envAmount, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::envSpeed, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::lfoAmount, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 86 * 4, 56 * 4, Parameters::driftAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 128 * 4, 56 * 4, Parameters::lowPass, &knobRight));
-	pGraphics->AttachControl(new Knob(this, 148 * 4, 56 * 4, Parameters::highPass, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 176 * 4, 56 * 4, Parameters::driveAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 132.5 * 4, 56 * 4, Parameters::lowPass, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 152.5 * 4, 56 * 4, Parameters::highPass, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 180.5 * 4, 56 * 4, Parameters::driveAmount, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 32 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 56 * 4, Parameters::wetVolume, &knobLeft));
 
