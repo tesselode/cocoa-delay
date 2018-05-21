@@ -22,6 +22,7 @@ enum Parameters
 	lowPass,
 	highPass,
 	driveAmount,
+	driveStyle,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -68,6 +69,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
+	GetParam(Parameters::driveStyle)->InitEnum("Drive style", DriveStyles::spiralDrive, DriveStyles::numDriveStyles);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -97,6 +99,14 @@ void Delay::InitParameters()
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::stationary, "Static");
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::circular, "Circular");
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::pingPong, "Ping pong");
+
+	// drive style display text
+	GetParam(Parameters::driveStyle)->SetDisplayText(DriveStyles::spiralDrive, "Spiral");
+	GetParam(Parameters::driveStyle)->SetDisplayText(DriveStyles::sinDrive, "Sine");
+	GetParam(Parameters::driveStyle)->SetDisplayText(DriveStyles::atanDrive, "Arctangent");
+	GetParam(Parameters::driveStyle)->SetDisplayText(DriveStyles::tanhDrive, "Hyperbolic tangent");
+	GetParam(Parameters::driveStyle)->SetDisplayText(DriveStyles::sqrtDrive, "Square root");
+	GetParam(Parameters::driveStyle)->SetDisplayText(DriveStyles::atanCosDrive, "Arctangent * Cosine");
 }
 
 void Delay::InitGraphics()
@@ -309,10 +319,11 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
+		auto driveStyle = (DriveStyles)(int)GetParam(Parameters::driveStyle)->Value();
 		if (driveAmount > 0)
 		{
-			outL = statefulDrive.Process(outL * driveAmount) / driveAmount;
-			outR = statefulDrive.Process(outR * driveAmount) / driveAmount;
+			outL = statefulDrive.Process(outL * driveAmount, driveStyle) / driveAmount;
+			outR = statefulDrive.Process(outR * driveAmount, driveStyle) / driveAmount;
 		}
 
 		// write to buffer

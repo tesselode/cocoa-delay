@@ -10,9 +10,33 @@ https://github.com/airwindows/airwindows/blob/master/plugins/WinVST/Spiral/Spira
 
 */
 
-double StatefulDrive::Process(double input)
+double StatefulDrive::Process(double input, DriveStyles style)
 {
-	auto driven = input == 0.0 ? 0.0 : sin(input * abs(input)) / abs(input);
+	double driven;
+	switch (style)
+	{
+	case spiralDrive:
+		driven = input == 0.0 ? 0.0 : sin(input * abs(input)) / abs(input);
+		break;
+	case sinDrive:
+		driven = sin(input);
+		break;
+	case atanDrive:
+		driven = atan(input);
+		break;
+	case tanhDrive:
+		driven = tanh(input);
+		break;
+	case sqrtDrive:
+		driven = input / sqrt(1.0 + input * input);
+		break;
+	case atanCosDrive:
+		driven = atan(input) * cos(input);
+		break;
+	default:
+		driven = 0.0;
+		break;
+	}
 	auto mix = fabs(previous + driven) * .5;
 	previous = driven;
 	return input * (1.0 - mix) + driven * mix;
