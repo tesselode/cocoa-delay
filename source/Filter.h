@@ -3,10 +3,9 @@
 class Filter
 {
 public:
-	void Process(double dt, double inL, double inR, double cutoff, bool hp, double &outL, double &outR);
+	double Process(double dt, double input, double cutoff);
 
 private:
-	double left = 0.0;
-	double right = 0.0;
+	double value = 0.0;
 };
 

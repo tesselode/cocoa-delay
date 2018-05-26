@@ -289,8 +289,10 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
-		lp.Process(dt, outL, outR, GetParam(Parameters::lowPass)->Value(), false, outL, outR);
-		hp.Process(dt, outL, outR, GetParam(Parameters::highPass)->Value(), true, outL, outR);
+		outL = lpL.Process(dt, outL, GetParam(Parameters::lowPass)->Value());
+		outR = lpR.Process(dt, outR, GetParam(Parameters::lowPass)->Value());
+		outL -= hpL.Process(dt, outL, GetParam(Parameters::highPass)->Value());
+		outR -= hpR.Process(dt, outR, GetParam(Parameters::highPass)->Value());
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
@@ -345,11 +347,11 @@ void Delay::OnParamChange(int paramIdx)
 	case Parameters::tempoSyncTime:
 	{
 		auto tempoSyncTime = (TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value();
-		pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
+		//pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
 		break;
 	}
 	case Parameters::lfoAmount:
-		pGraphics->GetControl(10)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
+		//pGraphics->GetControl(10)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
 		break;
 	}
 }

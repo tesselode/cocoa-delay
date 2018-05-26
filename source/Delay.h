@@ -58,8 +58,10 @@ private:
 	double circularPanAmount = 0.0;
 
 	// filters
-	Filter lp;
-	Filter hp;
+	Filter lpL;
+	Filter lpR;
+	Filter hpL;
+	Filter hpR;
 
 	// drive
 	StatefulDrive statefulDrive;
