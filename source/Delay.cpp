@@ -17,7 +17,8 @@ enum Parameters
 	stereoOffset,
 	panMode,
 	pan,
-	lowPass,
+	lpMode,
+	lpCut,
 	highPass,
 	driveAmount,
 	dryVolume,
@@ -50,6 +51,13 @@ enum TempoSyncTimes
 	numTempoSyncTimes
 };
 
+enum FilterModes
+{
+	onePole,
+	stateVariable,
+	numFilterModes
+};
+
 void Delay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
@@ -61,7 +69,8 @@ void Delay::InitParameters()
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::panMode)->InitEnum("Pan mode", PanModes::stationary, PanModes::numPanModes);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
-	GetParam(Parameters::lowPass)->InitDouble("Low pass", .75, .01, 1.0, .01);
+	GetParam(Parameters::lpMode)->InitEnum("Low pass mode", FilterModes::onePole, FilterModes::numFilterModes);
+	GetParam(Parameters::lpCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
@@ -115,7 +124,7 @@ void Delay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::lfoAmount, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 86 * 4, 56 * 4, Parameters::driftAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 132.5 * 4, 56 * 4, Parameters::lowPass, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 132.5 * 4, 56 * 4, Parameters::lpCut, &knobRight));
 	pGraphics->AttachControl(new Knob(this, 152.5 * 4, 56 * 4, Parameters::highPass, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 180.5 * 4, 56 * 4, Parameters::driveAmount, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 32 * 4, Parameters::dryVolume, &knobLeft));
@@ -289,8 +298,17 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
-		outL = lpL.Process(dt, outL, GetParam(Parameters::lowPass)->Value());
-		outR = lpR.Process(dt, outR, GetParam(Parameters::lowPass)->Value());
+		switch ((FilterModes)(int)GetParam(Parameters::lpMode)->Value())
+		{
+		case FilterModes::onePole:
+			outL = lpL.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
+			outR = lpR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
+			break;
+		case FilterModes::stateVariable:
+			outL = svfL.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
+			outR = svfR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
+			break;
+		}
 		outL -= hpL.Process(dt, outL, GetParam(Parameters::highPass)->Value());
 		outR -= hpR.Process(dt, outR, GetParam(Parameters::highPass)->Value());
 

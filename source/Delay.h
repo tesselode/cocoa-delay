@@ -5,6 +5,7 @@
 #include "Filter.h"
 #include "Knob.h"
 #include "StatefulDrive.h"
+#include "Svf.h"
 #include "Util.h"
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
@@ -60,6 +61,8 @@ private:
 	// filters
 	Filter lpL;
 	Filter lpR;
+	Svf svfL;
+	Svf svfR;
 	Filter hpL;
 	Filter hpR;
 

@@ -52,6 +52,7 @@
     <ClInclude Include="Util.h" />
     <ClInclude Include="StatefulDrive.h" />
     <ClInclude Include="Knob.h" />
+    <ClInclude Include="Svf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\WDL\rtaudiomidi\RtAudio.cpp">
@@ -82,6 +83,7 @@
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="StatefulDrive.cpp" />
     <ClCompile Include="Knob.cpp" />
+    <ClCompile Include="Svf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Delay.rc" />
