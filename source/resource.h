@@ -63,6 +63,7 @@ instrument determined by PLUG _IS _INST
 #define KNOBRIGHT_ID 104
 #define TEMPOSYNCTIMESMENU_ID 105
 #define PANMODESMENU_ID 106
+#define FILTERMODESMENU_ID 107
 
 // Image resource locations for this plug.
 #define BG_FN "resources/img/bg.png"
@@ -71,9 +72,10 @@ instrument determined by PLUG _IS _INST
 #define KNOBRIGHT_FN "resources/img/knob right.png"
 #define TEMPOSYNCTIMESMENU_FN "resources/img/tempo sync times.png"
 #define PANMODESMENU_FN "resources/img/pan modes.png"
+#define FILTERMODESMENU_FN "resources/img/filter modes.png"
 
 // GUI default dimensions
-#define GUI_WIDTH 216*4
+#define GUI_WIDTH 236*4
 #define GUI_HEIGHT 84*4
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones

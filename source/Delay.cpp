@@ -19,8 +19,8 @@ enum Parameters
 	pan,
 	lpMode,
 	lpCut,
-	highPass,
-	driveAmount,
+	hpCut,
+	driveGain,
 	driveMix,
 	driveFilter,
 	dryVolume,
@@ -73,8 +73,8 @@ void Delay::InitParameters()
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
 	GetParam(Parameters::lpMode)->InitEnum("Low pass mode", FilterModes::onePole, FilterModes::numFilterModes);
 	GetParam(Parameters::lpCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
-	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
-	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
+	GetParam(Parameters::hpCut)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
+	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveFilter)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
@@ -106,6 +106,10 @@ void Delay::InitParameters()
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::stationary, "Static");
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::circular, "Circular");
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::pingPong, "Ping pong");
+
+	// filter mode display text
+	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::onePole, "Gentle");
+	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::stateVariable, "Steep");
 }
 
 void Delay::InitGraphics()
@@ -118,19 +122,27 @@ void Delay::InitGraphics()
 	auto knobRight = pGraphics->LoadIBitmap(KNOBRIGHT_ID, KNOBRIGHT_FN, 53);
 	auto tempoSyncTimesMenu = pGraphics->LoadIBitmap(TEMPOSYNCTIMESMENU_ID, TEMPOSYNCTIMESMENU_FN, numTempoSyncTimes);
 	auto panModesMenu = pGraphics->LoadIBitmap(PANMODESMENU_ID, PANMODESMENU_FN, numPanModes);
+	auto filterModesMenu = pGraphics->LoadIBitmap(FILTERMODESMENU_ID, FILTERMODESMENU_FN, numFilterModes);
 
-	pGraphics->AttachControl(new Knob(this, 28 * 4, 17 * 4, Parameters::delayTime, &knobLeft));
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 52 * 4, 25 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu));
-	pGraphics->AttachControl(new Knob(this, 128 * 4, 17 * 4, Parameters::feedback, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 148 * 4, 18 * 4, Parameters::stereoOffset, &knobMiddle));
-	pGraphics->AttachControl(new Knob(this, 168 * 4, 18 * 4, Parameters::pan, &knobMiddle));
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 192 * 4, 25 * 4, Parameters::panMode, &panModesMenu));
-	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::lfoAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::lfoFrequency, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 86 * 4, 56 * 4, Parameters::driftAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 132.5 * 4, 56 * 4, Parameters::lpCut, &knobRight));
-	pGraphics->AttachControl(new Knob(this, 152.5 * 4, 56 * 4, Parameters::highPass, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 180.5 * 4, 56 * 4, Parameters::driveAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 28 * 4, 18 * 4, Parameters::delayTime, &knobLeft));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 52 * 4, 26 * 4, Parameters::tempoSyncTime, &tempoSyncTimesMenu));
+	pGraphics->AttachControl(new Knob(this, 76 * 4, 18 * 4, Parameters::lfoAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::lfoFrequency, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 124 * 4, 18 * 4, Parameters::driftAmount, &knobLeft));
+
+	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::feedback, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 68 * 4, 56 * 4, Parameters::stereoOffset, &knobMiddle));
+	pGraphics->AttachControl(new Knob(this, 88 * 4, 56 * 4, Parameters::pan, &knobMiddle));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 112 * 4, 64 * 4, Parameters::panMode, &panModesMenu));
+
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 168 * 4, 26 * 4, Parameters::lpMode, &filterModesMenu));
+	pGraphics->AttachControl(new Knob(this, 184 * 4, 18 * 4, Parameters::lpCut, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 204 * 4, 18 * 4, Parameters::hpCut, &knobLeft));
+
+	pGraphics->AttachControl(new Knob(this, 164 * 4, 56 * 4, Parameters::driveGain, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 184 * 4, 56 * 4, Parameters::driveMix, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 204 * 4, 56 * 4, Parameters::driveFilter, &knobLeft));
+
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 32 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 56 * 4, Parameters::wetVolume, &knobLeft));
 
@@ -313,11 +325,11 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 			outR = svfR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
 			break;
 		}
-		outL -= hpL.Process(dt, outL, GetParam(Parameters::highPass)->Value());
-		outR -= hpR.Process(dt, outR, GetParam(Parameters::highPass)->Value());
+		outL -= hpL.Process(dt, outL, GetParam(Parameters::hpCut)->Value());
+		outR -= hpR.Process(dt, outR, GetParam(Parameters::hpCut)->Value());
 
 		// drive
-		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
+		auto driveAmount = GetParam(Parameters::driveGain)->Value();
 		auto driveMix = GetParam(Parameters::driveMix)->Value();
 		if (driveAmount > 0)
 		{
