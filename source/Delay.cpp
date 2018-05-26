@@ -9,8 +9,6 @@ const int tapeLength = 10;
 enum Parameters
 {
 	delayTime,
-	envAmount,
-	envSpeed,
 	lfoAmount,
 	lfoFrequency,
 	driftAmount,
@@ -55,8 +53,6 @@ enum TempoSyncTimes
 void Delay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
-	GetParam(Parameters::envAmount)->InitDouble("Envelope amount", 0.0, -.9, .9, .01, "", "", 1.0);
-	GetParam(Parameters::envSpeed)->InitDouble("Envelope speed", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::lfoAmount)->InitDouble("LFO amount", 0.0, 0.0, .5, .01, "", "", 2.0);
 	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
 	GetParam(Parameters::driftAmount)->InitDouble("Drift amount", .001, 0.0, .05, .01, "", "", 2.0);
@@ -116,8 +112,6 @@ void Delay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 148 * 4, 18 * 4, Parameters::stereoOffset, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 168 * 4, 18 * 4, Parameters::pan, &knobMiddle));
 	pGraphics->AttachControl(new ISwitchPopUpControl(this, 192 * 4, 25 * 4, Parameters::panMode, &panModesMenu));
-	pGraphics->AttachControl(new Knob(this, 76 * 4, 18 * 4, Parameters::envAmount, &knobMiddle));
-	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::envSpeed, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::lfoAmount, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 86 * 4, 56 * 4, Parameters::driftAmount, &knobLeft));
@@ -178,8 +172,6 @@ double Delay::GetDelayTime()
 	}
 
 	// modulation
-	auto envAmount = GetParam(Parameters::envAmount)->Value();
-	if (envAmount != 0.0) delayTime = pow(delayTime, 1.0 + envAmount * envValue);
 	auto lfoAmount = GetParam(Parameters::lfoAmount)->Value();
 	if (lfoAmount != 0.0) delayTime = pow(delayTime, 1.0 + lfoAmount * sin(lfoPhase * 2 * pi));
 	auto driftAmount = GetParam(Parameters::driftAmount)->Value();
@@ -251,12 +243,6 @@ void Delay::UpdateParameters()
 	circularPanAmount += (circularPanAmountTarget - circularPanAmount) * 100.0 * dt;
 }
 
-void Delay::UpdateEnvelope(double input)
-{
-	auto speed = GetParam(Parameters::envSpeed)->Value();
-	envValue += (abs(input) - envValue) * speed * dt;
-}
-
 void Delay::UpdateLfo()
 {
 	lfoPhase += GetParam(Parameters::lfoFrequency)->Value() * dt;
@@ -292,7 +278,6 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 	{
 		UpdateParameters();
 		UpdateReadPositions();
-		UpdateEnvelope(inputs[0][s] + inputs[1][s]);
 		UpdateLfo();
 		UpdateDrift();
 
@@ -363,9 +348,6 @@ void Delay::OnParamChange(int paramIdx)
 		pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
 		break;
 	}
-	case Parameters::envAmount:
-		pGraphics->GetControl(8)->GrayOut(GetParam(Parameters::envAmount)->Value() == 0.0);
-		break;
 	case Parameters::lfoAmount:
 		pGraphics->GetControl(10)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
 		break;

@@ -37,7 +37,6 @@ private:
 	void UpdateReadPositions();
 	void UpdateWritePosition();
 	void UpdateParameters();
-	void UpdateEnvelope(double input);
 	void UpdateLfo();
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
@@ -66,7 +65,6 @@ private:
 	StatefulDrive statefulDrive;
 
 	// modulation
-	double envValue = 0.0;
 	double lfoPhase = 0.0;
 	double driftVelocity = 0.0;
 	double driftPhase = 0.0;
