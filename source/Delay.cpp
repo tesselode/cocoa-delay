@@ -67,7 +67,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
 	GetParam(Parameters::driftAmount)->InitDouble("Drift amount", .001, 0.0, .05, .01, "", "", 2.0);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", TempoSyncTimes::tempoSyncOff, TempoSyncTimes::numTempoSyncTimes);
-	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, 0.0, 1.0, .01);
+	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, -1.0, 1.0, .01);
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::panMode)->InitEnum("Pan mode", PanModes::stationary, PanModes::numPanModes);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
@@ -130,7 +130,7 @@ void Delay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 96 * 4, 18 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 124 * 4, 18 * 4, Parameters::driftAmount, &knobLeft));
 
-	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::feedback, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::feedback, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 68 * 4, 56 * 4, Parameters::stereoOffset, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 88 * 4, 56 * 4, Parameters::pan, &knobMiddle));
 	pGraphics->AttachControl(new ISwitchPopUpControl(this, 112 * 4, 64 * 4, Parameters::panMode, &panModesMenu));
