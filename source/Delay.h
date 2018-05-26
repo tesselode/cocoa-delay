@@ -68,6 +68,8 @@ private:
 
 	// drive
 	StatefulDrive statefulDrive;
+	Svf driveFilterL;
+	Svf driveFilterR;
 
 	// modulation
 	double lfoPhase = 0.0;

@@ -21,6 +21,8 @@ enum Parameters
 	lpCut,
 	highPass,
 	driveAmount,
+	driveMix,
+	driveFilter,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -73,6 +75,8 @@ void Delay::InitParameters()
 	GetParam(Parameters::lpCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
 	GetParam(Parameters::highPass)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveAmount)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
+	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
+	GetParam(Parameters::driveFilter)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -314,10 +318,13 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveAmount)->Value();
+		auto driveMix = GetParam(Parameters::driveMix)->Value();
 		if (driveAmount > 0)
 		{
-			outL = statefulDrive.Process(outL * driveAmount) / driveAmount;
-			outR = statefulDrive.Process(outR * driveAmount) / driveAmount;
+			outL = statefulDrive.Process(outL * driveAmount, driveMix) / driveAmount;
+			outR = statefulDrive.Process(outR * driveAmount, driveMix) / driveAmount;
+			outL = driveFilterL.Process(dt, outL, GetParam(Parameters::driveFilter)->Value());
+			outR = driveFilterR.Process(dt, outR, GetParam(Parameters::driveFilter)->Value());
 		}
 
 		// write to buffer

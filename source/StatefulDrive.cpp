@@ -10,10 +10,10 @@ https://github.com/airwindows/airwindows/blob/master/plugins/WinVST/Spiral/Spira
 
 */
 
-double StatefulDrive::Process(double input)
+double StatefulDrive::Process(double input, double amount)
 {
 	auto driven = input == 0.0 ? 0.0 : sin(input * abs(input)) / abs(input);
-	auto mix = fabs(previous + driven) * .5;
+	auto mix = fabs(previous + driven) * .5 * amount;
 	previous = driven;
 	return input * (1.0 - mix) + driven * mix;
 }
