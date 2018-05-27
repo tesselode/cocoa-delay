@@ -17,6 +17,9 @@ enum Parameters
 	stereoOffset,
 	panMode,
 	pan,
+	duckAmount,
+	duckAttackSpeed,
+	duckReleaseSpeed,
 	lpMode,
 	lpCut,
 	hpCut,
@@ -73,6 +76,9 @@ void Delay::InitParameters()
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
 	GetParam(Parameters::panMode)->InitEnum("Pan mode", PanModes::stationary, PanModes::numPanModes);
 	GetParam(Parameters::pan)->InitDouble("Panning", 0.0, -pi * .5, pi * .5, .01);
+	GetParam(Parameters::duckAmount)->InitDouble("Ducking amount", 0.0, 0.0, 10.0, .01, "", "", 1.0);
+	GetParam(Parameters::duckAttackSpeed)->InitDouble("Ducking attack", 10.0, .1, 100.0, .01, "", "", 2.0);
+	GetParam(Parameters::duckReleaseSpeed)->InitDouble("Ducking release", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::lpMode)->InitEnum("Low pass mode", FilterModes::onePole, FilterModes::numFilterModes);
 	GetParam(Parameters::lpCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
 	GetParam(Parameters::hpCut)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
@@ -273,6 +279,14 @@ void Delay::UpdateParameters()
 	circularPanAmount += (circularPanAmountTarget - circularPanAmount) * 100.0 * dt;
 }
 
+void Delay::UpdateDucking(double input)
+{
+	auto attackSpeed = GetParam(Parameters::duckAttackSpeed)->Value();
+	auto releaseSpeed = GetParam(Parameters::duckReleaseSpeed)->Value();
+	auto speed = duckFollower < abs(input) ? attackSpeed : releaseSpeed;
+	duckFollower += (abs(input) - duckFollower) * speed * dt;
+}
+
 void Delay::UpdateLfo()
 {
 	lfoPhase += GetParam(Parameters::lfoFrequency)->Value() * dt;
@@ -338,6 +352,7 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 	{
 		UpdateParameters();
 		UpdateReadPositions();
+		UpdateDucking(inputs[0][s] + inputs[1][s]);
 		UpdateLfo();
 		UpdateDrift();
 
@@ -386,6 +401,9 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		// output
 		auto dry = GetParam(Parameters::dryVolume)->Value();
 		auto wet = GetParam(Parameters::wetVolume)->Value();
+		auto duckValue = GetParam(Parameters::duckAmount)->Value() * duckFollower;
+		duckValue = duckValue > 1.0 ? 1.0 : duckValue;
+		wet *= 1.0 - duckValue;
 		outputs[0][s] = inputs[0][s] * dry + outL * wet;
 		outputs[1][s] = inputs[1][s] * dry + outR * wet;
 	}

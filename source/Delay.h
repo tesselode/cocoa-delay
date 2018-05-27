@@ -37,6 +37,7 @@ private:
 	void UpdateReadPositions();
 	void UpdateWritePosition();
 	void UpdateParameters();
+	void UpdateDucking(double input);
 	void UpdateLfo();
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
@@ -77,6 +78,7 @@ private:
 	TwoPoleFilter driveFilterR;
 
 	// modulation
+	double duckFollower = 0.0;
 	double lfoPhase = 0.0;
 	double driftVelocity = 0.0;
 	double driftPhase = 0.0;
