@@ -301,6 +301,36 @@ double Delay::GetSample(std::vector<double> &buffer, double position)
 	return interpolate(x, y0, y1, y2, y3);
 }
 
+void Delay::LowPass(double & l, double & r)
+{
+	// filters
+	switch ((FilterModes)(int)GetParam(Parameters::lpMode)->Value())
+	{
+	case FilterModes::onePole:
+		l = lp1L.Process(dt, l, GetParam(Parameters::lpCut)->Value());
+		r = lp1R.Process(dt, r, GetParam(Parameters::lpCut)->Value());
+		break;
+	case FilterModes::twoPole:
+		l = lp2L.Process(dt, l, GetParam(Parameters::lpCut)->Value());
+		r = lp2R.Process(dt, r, GetParam(Parameters::lpCut)->Value());
+		break;
+	case FilterModes::fourPole:
+		l = lp4L.Process(dt, l, GetParam(Parameters::lpCut)->Value());
+		r = lp4R.Process(dt, r, GetParam(Parameters::lpCut)->Value());
+		break;
+	case FilterModes::stateVariable:
+		l = lpSvfL.Process(dt, l, GetParam(Parameters::lpCut)->Value());
+		r = lpSvfR.Process(dt, r, GetParam(Parameters::lpCut)->Value());
+		break;
+	}
+}
+
+void Delay::HighPass(double & l, double & r)
+{
+	l -= hpL.Process(dt, l, GetParam(Parameters::hpCut)->Value());
+	r -= hpR.Process(dt, r, GetParam(Parameters::hpCut)->Value());
+}
+
 void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
 	for (int s = 0; s < nFrames; s++)
@@ -318,27 +348,8 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
-		switch ((FilterModes)(int)GetParam(Parameters::lpMode)->Value())
-		{
-		case FilterModes::onePole:
-			outL = lp1L.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
-			outR = lp1R.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
-			break;
-		case FilterModes::twoPole:
-			outL = lp2L.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
-			outR = lp2R.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
-			break;
-		case FilterModes::fourPole:
-			outL = lp4L.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
-			outR = lp4R.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
-			break;
-		case FilterModes::stateVariable:
-			outL = lpSvfL.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
-			outR = lpSvfR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
-			break;
-		}
-		outL -= hpL.Process(dt, outL, GetParam(Parameters::hpCut)->Value());
-		outR -= hpR.Process(dt, outR, GetParam(Parameters::hpCut)->Value());
+		LowPass(outL, outR);
+		HighPass(outL, outR);
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveGain)->Value();

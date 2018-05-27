@@ -40,6 +40,8 @@ private:
 	void UpdateLfo();
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
+	void LowPass(double &l, double &r);
+	void HighPass(double &l, double &r);
 
 	IGraphics* pGraphics;
 	double dt = 0.0;
