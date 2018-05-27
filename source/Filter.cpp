@@ -4,8 +4,28 @@ double OnePoleFilter::Process(double dt, double input, double cutoff)
 {
 	cutoff *= 44100 * dt;
 	cutoff = cutoff > 1.0 ? 1.0 : cutoff;
-	value += (input - value) * cutoff;
-	return value;
+	a += (input - a) * cutoff;
+	return a;
+}
+
+double TwoPoleFilter::Process(double dt, double input, double cutoff)
+{
+	cutoff *= 44100 * dt;
+	cutoff = cutoff > 1.0 ? 1.0 : cutoff;
+	a += (input - a) * cutoff;
+	b += (a - b) * cutoff;
+	return b;
+}
+
+double FourPoleFilter::Process(double dt, double input, double cutoff)
+{
+	cutoff *= 44100 * dt;
+	cutoff = cutoff > 1.0 ? 1.0 : cutoff;
+	a += (input - a) * cutoff;
+	b += (a - b) * cutoff;
+	c += (b - c) * cutoff;
+	d += (c - d) * cutoff;
+	return d;
 }
 
 double StateVariableFilter::Process(double dt, double input, double cutoff)

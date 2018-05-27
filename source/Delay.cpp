@@ -56,6 +56,8 @@ enum TempoSyncTimes
 enum FilterModes
 {
 	onePole,
+	twoPole,
+	fourPole,
 	stateVariable,
 	numFilterModes
 };
@@ -108,8 +110,10 @@ void Delay::InitParameters()
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::pingPong, "Ping pong");
 
 	// filter mode display text
-	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::onePole, "Gentle");
-	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::stateVariable, "Steep");
+	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::onePole, "1 pole");
+	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::twoPole, "2 pole");
+	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::fourPole, "4 pole");
+	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::stateVariable, "State variable");
 }
 
 void Delay::InitGraphics()
@@ -317,12 +321,20 @@ void Delay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrame
 		switch ((FilterModes)(int)GetParam(Parameters::lpMode)->Value())
 		{
 		case FilterModes::onePole:
-			outL = lpL.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
-			outR = lpR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
+			outL = lp1L.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
+			outR = lp1R.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
+			break;
+		case FilterModes::twoPole:
+			outL = lp2L.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
+			outR = lp2R.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
+			break;
+		case FilterModes::fourPole:
+			outL = lp4L.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
+			outR = lp4R.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
 			break;
 		case FilterModes::stateVariable:
-			outL = svfL.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
-			outR = svfR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
+			outL = lpSvfL.Process(dt, outL, GetParam(Parameters::lpCut)->Value());
+			outR = lpSvfR.Process(dt, outR, GetParam(Parameters::lpCut)->Value());
 			break;
 		}
 		outL -= hpL.Process(dt, outL, GetParam(Parameters::hpCut)->Value());

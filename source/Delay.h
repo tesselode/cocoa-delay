@@ -58,17 +58,21 @@ private:
 	double circularPanAmount = 0.0;
 
 	// filters
-	OnePoleFilter lpL;
-	OnePoleFilter lpR;
-	StateVariableFilter svfL;
-	StateVariableFilter svfR;
+	OnePoleFilter lp1L;
+	OnePoleFilter lp1R;
+	TwoPoleFilter lp2L;
+	TwoPoleFilter lp2R;
+	FourPoleFilter lp4L;
+	FourPoleFilter lp4R;
+	StateVariableFilter lpSvfL;
+	StateVariableFilter lpSvfR;
 	OnePoleFilter hpL;
 	OnePoleFilter hpR;
 
 	// drive
 	StatefulDrive statefulDrive;
-	StateVariableFilter driveFilterL;
-	StateVariableFilter driveFilterR;
+	TwoPoleFilter driveFilterL;
+	TwoPoleFilter driveFilterR;
 
 	// modulation
 	double lfoPhase = 0.0;
