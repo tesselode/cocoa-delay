@@ -429,11 +429,25 @@ void Delay::OnParamChange(int paramIdx)
 	case Parameters::tempoSyncTime:
 	{
 		auto tempoSyncTime = (TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value();
-		//pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
+		pGraphics->GetControl(1)->GrayOut(tempoSyncTime != TempoSyncTimes::tempoSyncOff);
 		break;
 	}
 	case Parameters::lfoAmount:
-		//pGraphics->GetControl(10)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
+		pGraphics->GetControl(4)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
 		break;
+	case Parameters::duckAmount:
+	{
+		auto duckingEnabled = GetParam(Parameters::duckAmount)->Value() > 0.0;
+		pGraphics->GetControl(11)->GrayOut(!duckingEnabled);
+		pGraphics->GetControl(12)->GrayOut(!duckingEnabled);
+		break;
+	}
+	case Parameters::driveGain:
+	{
+		auto driveEnabled = GetParam(Parameters::driveGain)->Value() > 0.0;
+		pGraphics->GetControl(17)->GrayOut(!driveEnabled);
+		pGraphics->GetControl(18)->GrayOut(!driveEnabled);
+		break;
+	}
 	}
 }
