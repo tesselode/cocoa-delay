@@ -141,11 +141,12 @@ void Delay::InitGraphics()
 
 	pGraphics->AttachControl(new ISwitchPopUpControl(this, 168 * 4, 26 * 4, Parameters::lpMode, &filterModesMenu));
 	pGraphics->AttachControl(new Knob(this, 184 * 4, 18 * 4, Parameters::lpCut, &knobRight));
-	pGraphics->AttachControl(new Knob(this, 204 * 4, 18 * 4, Parameters::hpCut, &knobLeft));
 
-	pGraphics->AttachControl(new Knob(this, 164 * 4, 56 * 4, Parameters::driveGain, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 184 * 4, 56 * 4, Parameters::driveMix, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 204 * 4, 56 * 4, Parameters::driveFilter, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 212 * 4, 18 * 4, Parameters::hpCut, &knobLeft));
+
+	pGraphics->AttachControl(new Knob(this, 168 * 4, 56 * 4, Parameters::driveGain, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 188 * 4, 56 * 4, Parameters::driveMix, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 208 * 4, 56 * 4, Parameters::driveFilter, &knobLeft));
 
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 32 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 56 * 4, Parameters::wetVolume, &knobLeft));
