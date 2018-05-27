@@ -242,7 +242,6 @@
     <ClInclude Include="Knob.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StatefulDrive.h" />
-    <ClInclude Include="Svf.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
@@ -251,7 +250,6 @@
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="Knob.cpp" />
     <ClCompile Include="StatefulDrive.cpp" />
-    <ClCompile Include="Svf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Delay.rc" />
