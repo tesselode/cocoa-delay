@@ -75,8 +75,8 @@ instrument determined by PLUG _IS _INST
 #define FILTERMODESMENU_FN "resources/img/filter modes.png"
 
 // GUI default dimensions
-#define GUI_WIDTH 264*4
-#define GUI_HEIGHT 84*4
+#define GUI_WIDTH 184*4
+#define GUI_HEIGHT 128*4
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones
 #if defined(SA_API)

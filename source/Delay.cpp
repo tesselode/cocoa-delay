@@ -140,25 +140,23 @@ void Delay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 110.677 * 4, 18 * 4, Parameters::lfoFrequency, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 138.677 * 4, 18 * 4, Parameters::driftAmount, &knobLeft));
 
-	pGraphics->AttachControl(new Knob(this, 28 * 4, 56 * 4, Parameters::feedback, &knobMiddle));
-	pGraphics->AttachControl(new Knob(this, 48 * 4, 56 * 4, Parameters::stereoOffset, &knobMiddle));
-	pGraphics->AttachControl(new Knob(this, 68 * 4, 56 * 4, Parameters::pan, &knobMiddle));
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 92 * 4, 64 * 4, Parameters::panMode, &panModesMenu));
-	pGraphics->AttachControl(new Knob(this, 116 * 4, 56 * 4, Parameters::duckAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 136 * 4, 56 * 4, Parameters::duckAttackSpeed, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 156 * 4, 56 * 4, Parameters::duckReleaseSpeed, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 28 * 4, 62 * 4, Parameters::feedback, &knobMiddle));
+	pGraphics->AttachControl(new Knob(this, 48 * 4, 62 * 4, Parameters::stereoOffset, &knobMiddle));
+	pGraphics->AttachControl(new Knob(this, 68 * 4, 62 * 4, Parameters::pan, &knobMiddle));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 92 * 4, 70 * 4, Parameters::panMode, &panModesMenu));
+	pGraphics->AttachControl(new Knob(this, 116 * 4, 62 * 4, Parameters::duckAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 136 * 4, 62 * 4, Parameters::duckAttackSpeed, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 156 * 4, 62 * 4, Parameters::duckReleaseSpeed, &knobLeft));
 
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 192 * 4, 26 * 4, Parameters::lpMode, &filterModesMenu));
-	pGraphics->AttachControl(new Knob(this, 208 * 4, 18 * 4, Parameters::lpCut, &knobRight));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 38 * 4, 108 * 4, Parameters::lpMode, &filterModesMenu));
+	pGraphics->AttachControl(new Knob(this, 54 * 4, 100 * 4, Parameters::lpCut, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 82 * 4, 100 * 4, Parameters::hpCut, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 110 * 4, 100 * 4, Parameters::driveGain, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 130 * 4, 100 * 4, Parameters::driveMix, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 150 * 4, 100 * 4, Parameters::driveFilter, &knobRight));
 
-	pGraphics->AttachControl(new Knob(this, 236 * 4, 18 * 4, Parameters::hpCut, &knobLeft));
-
-	pGraphics->AttachControl(new Knob(this, 192 * 4, 56 * 4, Parameters::driveGain, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 212 * 4, 56 * 4, Parameters::driveMix, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 232 * 4, 56 * 4, Parameters::driveFilter, &knobRight));
-
-	pGraphics->AttachControl(new Knob(this, 0 * 4, 32 * 4, Parameters::dryVolume, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 0 * 4, 56 * 4, Parameters::wetVolume, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 0 * 4, 76 * 4, Parameters::dryVolume, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 0 * 4, 100 * 4, Parameters::wetVolume, &knobLeft));
 
 	AttachGraphics(pGraphics);
 }
