@@ -81,7 +81,7 @@ void Delay::InitParameters()
 	GetParam(Parameters::duckReleaseSpeed)->InitDouble("Ducking release", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::lpMode)->InitEnum("Low pass mode", FilterModes::onePole, FilterModes::numFilterModes);
 	GetParam(Parameters::lpCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
-	GetParam(Parameters::hpCut)->InitDouble("High pass", 0.0, 0.0, .99, .01, "", "", 2.0);
+	GetParam(Parameters::hpCut)->InitDouble("High pass", 0.001, 0.001, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveFilter)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
