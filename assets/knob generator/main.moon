@@ -5,18 +5,20 @@ buffer = .25
 
 color =
 	body: {226/255, 229/255, 242/255}
-	gray: {84/255, 85/255, 89/255}
+	gray: {226/255, 229/255, 242/255, .25}
 	accent: {171/255, 56/255, 133/255}
 
 drawKnob = (angle, originAngle) -> with love.graphics
 	angle = math.rad angle
 	originAngle = math.rad originAngle
+	.setBlendMode 'alpha', 'premultiplied'
 	.push 'all'
 	.setColor color.body
 	.circle 'fill', .5, .5, knobRadius - outlineThickness / 2, 64
 	.setColor color.gray
 	.setLineWidth outlineThickness
 	.circle 'line', .5, .5, knobRadius, 64
+	.setBlendMode 'alpha', 'alphamultiply'
 	.setColor color.accent
 	.circle 'fill', .5 + .2 * math.cos(angle), .5 + .2 * math.sin(angle), 1/16, 64
 	.arc 'line', 'open', .5, .5, knobRadius, angle, originAngle, 64
