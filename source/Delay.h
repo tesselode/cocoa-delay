@@ -59,6 +59,10 @@ private:
 	double parameterChangeVolume = 1.0;
 	double stationaryPanAmount = 0.0;
 	double circularPanAmount = 0.0;
+	double lp1Mix = 0.0;
+	double lp2Mix = 0.0;
+	double lp4Mix = 0.0;
+	double lpSvfMix = 0.0;
 
 	// filters
 	OnePoleFilter lp1L;

@@ -278,6 +278,13 @@ void Delay::UpdateParameters()
 	stationaryPanAmount += (stationaryPanAmountTarget - stationaryPanAmount) * 100.0 * dt;
 	auto circularPanAmountTarget = (currentPanMode == PanModes::circular ? panAmount : 0.0);
 	circularPanAmount += (circularPanAmountTarget - circularPanAmount) * 100.0 * dt;
+
+	// filter mix smoothing
+	auto lpMode = (FilterModes)(int)GetParam(Parameters::lpMode)->Value();
+	lp1Mix += ((lpMode == FilterModes::onePole ? 1.0 : 0.0) - lp1Mix) * 100.0 * dt;
+	lp2Mix += ((lpMode == FilterModes::twoPole ? 1.0 : 0.0) - lp2Mix) * 100.0 * dt;
+	lp4Mix += ((lpMode == FilterModes::fourPole ? 1.0 : 0.0) - lp4Mix) * 100.0 * dt;
+	lpSvfMix += ((lpMode == FilterModes::stateVariable ? 1.0 : 0.0) - lpSvfMix) * 100.0 * dt;
 }
 
 void Delay::UpdateDucking(double input)
@@ -319,26 +326,18 @@ double Delay::GetSample(std::vector<double> &buffer, double position)
 
 void Delay::LowPass(double & l, double & r)
 {
-	// filters
-	switch ((FilterModes)(int)GetParam(Parameters::lpMode)->Value())
-	{
-	case FilterModes::onePole:
-		l = lp1L.Process(dt, l, GetParam(Parameters::lpCut)->Value());
-		r = lp1R.Process(dt, r, GetParam(Parameters::lpCut)->Value());
-		break;
-	case FilterModes::twoPole:
-		l = lp2L.Process(dt, l, GetParam(Parameters::lpCut)->Value());
-		r = lp2R.Process(dt, r, GetParam(Parameters::lpCut)->Value());
-		break;
-	case FilterModes::fourPole:
-		l = lp4L.Process(dt, l, GetParam(Parameters::lpCut)->Value());
-		r = lp4R.Process(dt, r, GetParam(Parameters::lpCut)->Value());
-		break;
-	case FilterModes::stateVariable:
-		l = lpSvfL.Process(dt, l, GetParam(Parameters::lpCut)->Value());
-		r = lpSvfR.Process(dt, r, GetParam(Parameters::lpCut)->Value());
-		break;
-	}
+	auto inL = l;
+	auto inR = r;
+	l = 0.0;
+	r = 0.0;
+	l += lp1L.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lp1Mix;
+	r += lp1R.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lp1Mix;
+	l += lp2L.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lp2Mix;
+	r += lp2R.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lp2Mix;
+	l += lp4L.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lp4Mix;
+	r += lp4R.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lp4Mix;
+	l += lpSvfL.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lpSvfMix;
+	r += lpSvfR.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lpSvfMix;
 }
 
 void Delay::HighPass(double & l, double & r)
