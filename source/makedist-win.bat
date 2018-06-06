@@ -6,7 +6,7 @@ REM - zipping requires 7zip in %ProgramFiles%\7-Zip\7z.exe
 REM - building installer requires innotsetup in "%ProgramFiles(x86)%\Inno Setup 5\iscc"
 REM - AAX codesigning requires ashelper tool added to %PATH% env variable and aax.key/.crt in .\..\..\..\Certificates\
 
-echo Making Delay win distribution ...
+echo Making CocoaDelay win distribution ...
 
 echo ------------------------------------------------------------------
 echo Updating version numbers ...
@@ -33,10 +33,10 @@ REM - set preprocessor macros like this, for instance to enable demo build:
 REM - SET CMDLINE_DEFINES="DEMO_VERSION"
 
 REM - Could build individual targets like this:
-REM - msbuild Delay-app.vcxproj /p:configuration=release /p:platform=win32
+REM - msbuild CocoaDelay-app.vcxproj /p:configuration=release /p:platform=win32
 
-msbuild Delay.sln /p:configuration=release /p:platform=win32 /nologo /noconsolelogger /fileLogger /v:quiet /flp:logfile=build-win.log;errorsonly 
-msbuild Delay.sln /p:configuration=release /p:platform=x64 /nologo /noconsolelogger /fileLogger /v:quiet /flp:logfile=build-win.log;errorsonly;append
+msbuild CocoaDelay.sln /p:configuration=release /p:platform=win32 /nologo /noconsolelogger /fileLogger /v:quiet /flp:logfile=build-win.log;errorsonly 
+msbuild CocoaDelay.sln /p:configuration=release /p:platform=x64 /nologo /noconsolelogger /fileLogger /v:quiet /flp:logfile=build-win.log;errorsonly;append
 
 #echo ------------------------------------------------------------------
 #echo Code sign aax binary...
@@ -51,18 +51,18 @@ echo Making Installer ...
 if exist "%ProgramFiles(x86)%" (goto 64-Bit-is) else (goto 32-Bit-is)
 
 :32-Bit-is
-"%ProgramFiles%\Inno Setup 5\iscc" /cc ".\installer\Delay.iss"
+"%ProgramFiles%\Inno Setup 5\iscc" /cc ".\installer\CocoaDelay.iss"
 goto END-is
 
 :64-Bit-is
-"%ProgramFiles(x86)%\Inno Setup 5\iscc" /cc ".\installer\Delay.iss"
+"%ProgramFiles(x86)%\Inno Setup 5\iscc" /cc ".\installer\CocoaDelay.iss"
 goto END-is
 
 :END-is
 
 REM - ZIP
-REM - "%ProgramFiles%\7-Zip\7z.exe" a .\installer\Delay-win-32bit.zip .\build-win\app\win32\bin\Delay.exe .\build-win\vst3\win32\bin\Delay.vst3 .\build-win\vst2\win32\bin\Delay.dll .\build-win\rtas\bin\Delay.dpm .\build-win\rtas\bin\Delay.dpm.rsr .\build-win\aax\bin\Delay.aaxplugin* .\installer\license.rtf .\installer\readmewin.rtf
-REM - "%ProgramFiles%\7-Zip\7z.exe" a .\installer\Delay-win-64bit.zip .\build-win\app\x64\bin\Delay.exe .\build-win\vst3\x64\bin\Delay.vst3 .\build-win\vst2\x64\bin\Delay.dll .\installer\license.rtf .\installer\readmewin.rtf
+REM - "%ProgramFiles%\7-Zip\7z.exe" a .\installer\CocoaDelay-win-32bit.zip .\build-win\app\win32\bin\CocoaDelay.exe .\build-win\vst3\win32\bin\CocoaDelay.vst3 .\build-win\vst2\win32\bin\CocoaDelay.dll .\build-win\rtas\bin\CocoaDelay.dpm .\build-win\rtas\bin\CocoaDelay.dpm.rsr .\build-win\aax\bin\CocoaDelay.aaxplugin* .\installer\license.rtf .\installer\readmewin.rtf
+REM - "%ProgramFiles%\7-Zip\7z.exe" a .\installer\CocoaDelay-win-64bit.zip .\build-win\app\x64\bin\CocoaDelay.exe .\build-win\vst3\x64\bin\CocoaDelay.vst3 .\build-win\vst2\x64\bin\CocoaDelay.dll .\installer\license.rtf .\installer\readmewin.rtf
 
 echo ------------------------------------------------------------------
 echo Printing log file to console...

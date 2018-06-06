@@ -38,7 +38,7 @@ def main():
   print "update_version.py - setting version to " + FullVersionStr
   print "Updating plist version info..."
   
-  plistpath = scriptpath + "/resources/Delay-VST2-Info.plist"
+  plistpath = scriptpath + "/resources/CocoaDelay-VST2-Info.plist"
   vst2 = plistlib.readPlist(plistpath)
   vst2['CFBundleGetInfoString'] = CFBundleGetInfoString
   vst2['CFBundleVersion'] = CFBundleVersion
@@ -46,7 +46,7 @@ def main():
   plistlib.writePlist(vst2, plistpath)
   replacestrs(plistpath, "//Apple//", "//Apple Computer//");
   
-  plistpath = scriptpath + "/resources/Delay-AU-Info.plist"
+  plistpath = scriptpath + "/resources/CocoaDelay-AU-Info.plist"
   au = plistlib.readPlist(plistpath)
   au['CFBundleGetInfoString'] = CFBundleGetInfoString
   au['CFBundleVersion'] = CFBundleVersion
@@ -54,7 +54,7 @@ def main():
   plistlib.writePlist(au, plistpath)
   replacestrs(plistpath, "//Apple//", "//Apple Computer//");
   
-  plistpath = scriptpath + "/resources/Delay-VST3-Info.plist"
+  plistpath = scriptpath + "/resources/CocoaDelay-VST3-Info.plist"
   vst3 = plistlib.readPlist(plistpath)
   vst3['CFBundleGetInfoString'] = CFBundleGetInfoString
   vst3['CFBundleVersion'] = CFBundleVersion
@@ -62,7 +62,7 @@ def main():
   plistlib.writePlist(vst3, plistpath)
   replacestrs(plistpath, "//Apple//", "//Apple Computer//");
   
-  plistpath = scriptpath + "/resources/Delay-OSXAPP-Info.plist"
+  plistpath = scriptpath + "/resources/CocoaDelay-OSXAPP-Info.plist"
   app = plistlib.readPlist(plistpath)
   app['CFBundleGetInfoString'] = CFBundleGetInfoString
   app['CFBundleVersion'] = CFBundleVersion
@@ -70,7 +70,7 @@ def main():
   plistlib.writePlist(app, plistpath)
   replacestrs(plistpath, "//Apple//", "//Apple Computer//");
   
-  plistpath = scriptpath + "/resources/Delay-RTAS-Info.plist"
+  plistpath = scriptpath + "/resources/CocoaDelay-RTAS-Info.plist"
   rtas = plistlib.readPlist(plistpath)
   rtas['CFBundleGetInfoString'] = CFBundleGetInfoString
   rtas['CFBundleVersion'] = CFBundleVersion
@@ -78,7 +78,7 @@ def main():
   plistlib.writePlist(rtas, plistpath)
   replacestrs(plistpath, "//Apple//", "//Apple Computer//");
   
-  plistpath = scriptpath + "/resources/Delay-AAX-Info.plist"
+  plistpath = scriptpath + "/resources/CocoaDelay-AAX-Info.plist"
   aax = plistlib.readPlist(plistpath)
   aax['CFBundleGetInfoString'] = CFBundleGetInfoString
   aax['CFBundleVersion'] = CFBundleVersion
@@ -86,7 +86,7 @@ def main():
   plistlib.writePlist(aax, plistpath)
   replacestrs(plistpath, "//Apple//", "//Apple Computer//");
   
-#   plistpath = scriptpath + "/resources/Delay-IOSAPP-Info.plist"
+#   plistpath = scriptpath + "/resources/CocoaDelay-IOSAPP-Info.plist"
 #   iosapp = plistlib.readPlist(plistpath)
 #   iosapp['CFBundleGetInfoString'] = CFBundleGetInfoString
 #   iosapp['CFBundleVersion'] = CFBundleVersion
@@ -96,7 +96,7 @@ def main():
 
   print "Updating Mac Installer version info..."
   
-  plistpath = scriptpath + "/installer/Delay.pkgproj"
+  plistpath = scriptpath + "/installer/CocoaDelay.pkgproj"
   installer = plistlib.readPlist(plistpath)
   
   for x in range(0,6):
@@ -107,7 +107,7 @@ def main():
   
   print "Updating Windows Installer version info..."
   
-  for line in fileinput.input(scriptpath + "/installer/Delay.iss",inplace=1):
+  for line in fileinput.input(scriptpath + "/installer/CocoaDelay.iss",inplace=1):
     if "AppVersion" in line:
       line="AppVersion=" + FullVersionStr + "\n"
     sys.stdout.write(line)

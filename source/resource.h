@@ -1,26 +1,26 @@
-#define PLUG_MFR "AndrewMinnich"
-#define PLUG_NAME "Delay"
+#define PLUG_MFR "Andrew Minnich"
+#define PLUG_NAME "Cocoa Delay"
 
-#define PLUG_CLASS_NAME Delay
+#define PLUG_CLASS_NAME CocoaDelay
 
-#define BUNDLE_MFR "AndrewMinnich"
-#define BUNDLE_NAME "Delay"
+#define BUNDLE_MFR "Andrew Minnich"
+#define BUNDLE_NAME "Cocoa Delay"
 
-#define PLUG_ENTRY Delay_Entry
-#define PLUG_FACTORY Delay_Factory
-#define PLUG_VIEW_ENTRY Delay_ViewEntry
+#define PLUG_ENTRY CocoaDelay_Entry
+#define PLUG_FACTORY CocoaDelay_Factory
+#define PLUG_VIEW_ENTRY CocoaDelay_ViewEntry
 
-#define PLUG_ENTRY_STR "Delay_Entry"
-#define PLUG_VIEW_ENTRY_STR "Delay_ViewEntry"
+#define PLUG_ENTRY_STR "CocoaDelay_Entry"
+#define PLUG_VIEW_ENTRY_STR "CocoaDelay_ViewEntry"
 
-#define VIEW_CLASS Delay_View
-#define VIEW_CLASS_STR "Delay_View"
+#define VIEW_CLASS CocoaDelay_View
+#define VIEW_CLASS_STR "CocoaDelay_View"
 
 // Format        0xMAJR.MN.BG - in HEX! so version 10.1.5 would be 0x000A0105
 #define PLUG_VER 0x00010000
 #define VST3_VER_STR "1.0.0"
 
-#define PLUG_COPYRIGHT  "Copyright 2017 Acme Inc"
+#define PLUG_COPYRIGHT  "Copyright 2018 Andrew Minnich"
 
 // http://service.steinberg.de/databases/plugin.nsf/plugIn?openForm
 // 4 chars, single quotes. At least one capital letter
@@ -37,7 +37,7 @@
 #endif
 
 #define PLUG_MFR_PT "AndrewMinnich\nAndrewMinnich\nAcme"
-#define PLUG_NAME_PT "Delay\nIPEF"
+#define PLUG_NAME_PT "CocoaDelay\nIPEF"
 #define PLUG_TYPE_PT "Effect"
 #define PLUG_DOES_AUDIOSUITE 1
 
