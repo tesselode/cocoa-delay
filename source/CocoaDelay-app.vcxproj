@@ -281,6 +281,7 @@
     <ClInclude Include="CocoaDelay.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="Knob.h" />
+    <ClInclude Include="PresetMenu.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StatefulDrive.h" />
     <ClInclude Include="Util.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="CocoaDelay.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="Knob.cpp" />
+    <ClCompile Include="Presets.cpp" />
     <ClCompile Include="StatefulDrive.cpp" />
   </ItemGroup>
   <ItemGroup>

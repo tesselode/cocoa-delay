@@ -52,6 +52,7 @@
     <ClInclude Include="Knob.h" />
     <ClInclude Include="StatefulDrive.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="PresetMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\WDL\rtaudiomidi\RtAudio.cpp">
@@ -82,6 +83,7 @@
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="Knob.cpp" />
     <ClCompile Include="StatefulDrive.cpp" />
+    <ClCompile Include="Presets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CocoaDelay.rc" />

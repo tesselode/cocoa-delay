@@ -3,68 +3,6 @@
 #include "IControl.h"
 #include "resource.h"
 
-const int numPrograms = 128;
-const int tapeLength = 10;
-
-enum Parameters
-{
-	delayTime,
-	lfoAmount,
-	lfoFrequency,
-	driftAmount,
-	tempoSyncTime,
-	feedback,
-	stereoOffset,
-	panMode,
-	pan,
-	duckAmount,
-	duckAttackSpeed,
-	duckReleaseSpeed,
-	lpMode,
-	lpCut,
-	hpCut,
-	driveGain,
-	driveMix,
-	driveFilter,
-	dryVolume,
-	wetVolume,
-	numParameters
-};
-
-enum TempoSyncTimes
-{
-	tempoSyncOff,
-	whole,
-	dottedHalf,
-	half,
-	tripletHalf,
-	dottedQuarter,
-	quarter,
-	tripletQuarter,
-	dottedEighth,
-	eighth,
-	tripletEighth,
-	dottedSixteenth,
-	sixteenth,
-	tripletSixteenth,
-	dottedThirtysecond,
-	thirtysecond,
-	tripletThirtysecond,
-	dottedSixtyforth,
-	sixtyforth,
-	tripletSixtyforth,
-	numTempoSyncTimes
-};
-
-enum FilterModes
-{
-	onePole,
-	twoPole,
-	fourPole,
-	stateVariable,
-	numFilterModes
-};
-
 void CocoaDelay::InitParameters()
 {
 	GetParam(Parameters::delayTime)->InitDouble("Delay time", .2, 0.001, 2.0, .01, "", "", 2.0);
@@ -158,12 +96,9 @@ void CocoaDelay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 76 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 100 * 4, Parameters::wetVolume, &knobLeft));
 
-	AttachGraphics(pGraphics);
-}
+	//pGraphics->AttachControl(new PresetMenu(this, IRECT(0, 0, 100, 25)));
 
-void CocoaDelay::InitPresets()
-{
-	MakeDefaultPreset("-", numPrograms);
+	AttachGraphics(pGraphics);
 }
 
 CocoaDelay::CocoaDelay(IPlugInstanceInfo instanceInfo)

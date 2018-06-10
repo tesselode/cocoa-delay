@@ -4,10 +4,73 @@
 #include <cmath>
 #include "Filter.h"
 #include "Knob.h"
+#include "PresetMenu.h"
 #include "StatefulDrive.h"
 #include "Util.h"
 #include <vector>
 #include "IPlug_include_in_plug_hdr.h"
+
+const int numPrograms = 128;
+const int tapeLength = 10;
+
+enum Parameters
+{
+	delayTime,
+	lfoAmount,
+	lfoFrequency,
+	driftAmount,
+	tempoSyncTime,
+	feedback,
+	stereoOffset,
+	panMode,
+	pan,
+	duckAmount,
+	duckAttackSpeed,
+	duckReleaseSpeed,
+	lpMode,
+	lpCut,
+	hpCut,
+	driveGain,
+	driveMix,
+	driveFilter,
+	dryVolume,
+	wetVolume,
+	numParameters
+};
+
+enum TempoSyncTimes
+{
+	tempoSyncOff,
+	whole,
+	dottedHalf,
+	half,
+	tripletHalf,
+	dottedQuarter,
+	quarter,
+	tripletQuarter,
+	dottedEighth,
+	eighth,
+	tripletEighth,
+	dottedSixteenth,
+	sixteenth,
+	tripletSixteenth,
+	dottedThirtysecond,
+	thirtysecond,
+	tripletThirtysecond,
+	dottedSixtyforth,
+	sixtyforth,
+	tripletSixtyforth,
+	numTempoSyncTimes
+};
+
+enum FilterModes
+{
+	onePole,
+	twoPole,
+	fourPole,
+	stateVariable,
+	numFilterModes
+};
 
 enum PanModes
 {
