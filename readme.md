@@ -1,6 +1,6 @@
 # Cocoa Delay
 
-![Cocoa Delay screenshot](images\screenshot.png)
+![Cocoa Delay screenshot](images/screenshot.png)
 
 **Cocoa Delay** is a free, open-source delay plugin in VST format. It focuses on clean design, easy operation, and a warm, lively sound.
 

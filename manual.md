@@ -4,7 +4,7 @@
 
 ## Time section
 
-![Time section screenshot](images\time.png)
+![Time section screenshot](images/time.png)
 
 The time section affects the timing of echoes.
 
@@ -20,7 +20,7 @@ The time section affects the timing of echoes.
 
 ## Feedback section
 
-![Feedback section screenshot](images\feedback.png)
+![Feedback section screenshot](images/feedback.png)
 
 The feedback section affects the sound of the echoes.
 
@@ -36,7 +36,7 @@ The feedback section affects the sound of the echoes.
 
 ## Ducking
 
-![Ducking section screenshot](images\ducking.png)
+![Ducking section screenshot](images/ducking.png)
 
 The ducking section allows you to to decrease the volume of the echoes when the input signal is louder, creating an effect much like sidechain compression.
 
@@ -46,7 +46,7 @@ The ducking section allows you to to decrease the volume of the echoes when the 
 
 ## Filter
 
-![Filter section screenshot](images\filter.png)
+![Filter section screenshot](images/filter.png)
 
 The filter section allows you to remove high or low frequencies from the signal each time it is written to the buffer, making each echo sound duller or brighter.
 
@@ -63,7 +63,7 @@ The filter section allows you to remove high or low frequencies from the signal 
 
 ## Drive
 
-![Drive section screenshot](images\drive.png)
+![Drive section screenshot](images/drive.png)
 
 The drive section adds a subtle (or un-subtle) saturation effect to the signal before it is written to the buffer.
 
