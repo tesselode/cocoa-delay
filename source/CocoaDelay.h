@@ -96,6 +96,7 @@ private:
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
 	void HighPass(double &l, double &r);
+	void WriteToBuffer(double** inputs, int s, double outL, double outR);
 
 	IGraphics* pGraphics;
 	double dt = 0.0;

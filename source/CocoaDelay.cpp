@@ -264,6 +264,27 @@ void CocoaDelay::HighPass(double & l, double & r)
 	r -= tempOutR;
 }
 
+void CocoaDelay::WriteToBuffer(double** inputs, int s, double outL, double outR)
+{
+	auto writeL = 0.0, writeR = 0.0;
+	writeL += inputs[0][s];
+	writeR += inputs[1][s];
+	adjustPanning(writeL, writeR, stationaryPanAmount * .5, writeL, writeR);
+	writeL += outL * GetParam(Parameters::feedback)->Value();
+	writeR += outR * GetParam(Parameters::feedback)->Value();
+	switch (currentPanMode)
+	{
+	case PanModes::pingPong:
+		bufferL[writePosition] = writeR * parameterChangeVolume;
+		bufferR[writePosition] = writeL * parameterChangeVolume;
+		break;
+	default:
+		bufferL[writePosition] = writeL * parameterChangeVolume;
+		bufferR[writePosition] = writeR * parameterChangeVolume;
+		break;
+	}
+}
+
 void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
 	for (int s = 0; s < nFrames; s++)
@@ -296,23 +317,7 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		}
 
 		// write to buffer
-		auto writeL = 0.0, writeR = 0.0;
-		writeL += inputs[0][s];
-		writeR += inputs[1][s];
-		adjustPanning(writeL, writeR, stationaryPanAmount * .5, writeL, writeR);
-		writeL += outL * GetParam(Parameters::feedback)->Value();
-		writeR += outR * GetParam(Parameters::feedback)->Value();
-		switch (currentPanMode)
-		{
-		case PanModes::pingPong:
-			bufferL[writePosition] = writeR * parameterChangeVolume;
-			bufferR[writePosition] = writeL * parameterChangeVolume;
-			break;
-		default:
-			bufferL[writePosition] = writeL * parameterChangeVolume;
-			bufferR[writePosition] = writeR * parameterChangeVolume;
-			break;
-		}
+		WriteToBuffer(inputs, s, outL, outR);
 		UpdateWritePosition();
 
 		// output
