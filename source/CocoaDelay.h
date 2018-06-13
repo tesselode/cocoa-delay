@@ -32,7 +32,7 @@ enum Parameters
 	hpCut,
 	driveGain,
 	driveMix,
-	driveFilter,
+	driveCutoff,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -128,21 +128,15 @@ private:
 	double lpSvfMix = 0.0;
 
 	// filters
-	OnePoleFilter lp1L;
-	OnePoleFilter lp1R;
-	TwoPoleFilter lp2L;
-	TwoPoleFilter lp2R;
-	FourPoleFilter lp4L;
-	FourPoleFilter lp4R;
-	StateVariableFilter lpSvfL;
-	StateVariableFilter lpSvfR;
-	OnePoleFilter hpL;
-	OnePoleFilter hpR;
+	DualFilter<OnePoleFilter> lp1;
+	DualFilter<TwoPoleFilter> lp2;
+	DualFilter<FourPoleFilter> lp4;
+	DualFilter<StateVariableFilter> lpSvf;
+	DualFilter<OnePoleFilter> hp;
 
 	// drive
 	StatefulDrive statefulDrive;
-	TwoPoleFilter driveFilterL;
-	TwoPoleFilter driveFilterR;
+	DualFilter<TwoPoleFilter> driveFilter;
 
 	// modulation
 	double duckFollower = 0.0;

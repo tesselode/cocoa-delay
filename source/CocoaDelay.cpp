@@ -22,7 +22,7 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::hpCut)->InitDouble("High pass", 0.001, 0.001, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::driveFilter)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
+	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -91,7 +91,7 @@ void CocoaDelay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 82 * 4, 100 * 4, Parameters::hpCut, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 110 * 4, 100 * 4, Parameters::driveGain, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 130 * 4, 100 * 4, Parameters::driveMix, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 150 * 4, 100 * 4, Parameters::driveFilter, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 150 * 4, 100 * 4, Parameters::driveCutoff, &knobRight));
 
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 76 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 100 * 4, Parameters::wetVolume, &knobLeft));
@@ -263,22 +263,35 @@ void CocoaDelay::LowPass(double & l, double & r)
 {
 	auto inL = l;
 	auto inR = r;
+	auto tempOutL = 0.0;
+	auto tempOutR = 0.0;
+
 	l = 0.0;
 	r = 0.0;
-	l += lp1L.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lp1Mix;
-	r += lp1R.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lp1Mix;
-	l += lp2L.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lp2Mix;
-	r += lp2R.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lp2Mix;
-	l += lp4L.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lp4Mix;
-	r += lp4R.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lp4Mix;
-	l += lpSvfL.Process(dt, inL, GetParam(Parameters::lpCut)->Value()) * lpSvfMix;
-	r += lpSvfR.Process(dt, inR, GetParam(Parameters::lpCut)->Value()) * lpSvfMix;
+	lp1.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
+	l += tempOutL * lp1Mix;
+	r += tempOutR * lp1Mix;
+	lp2.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
+	l += tempOutL * lp2Mix;
+	r += tempOutR * lp2Mix;
+	lp4.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
+	l += tempOutL * lp4Mix;
+	r += tempOutR * lp4Mix;
+	lpSvf.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
+	l += tempOutL * lpSvfMix;
+	r += tempOutR * lpSvfMix;
 }
 
 void CocoaDelay::HighPass(double & l, double & r)
 {
-	l -= hpL.Process(dt, l, GetParam(Parameters::hpCut)->Value());
-	r -= hpR.Process(dt, r, GetParam(Parameters::hpCut)->Value());
+	auto inL = l;
+	auto inR = r;
+	auto tempOutL = 0.0;
+	auto tempOutR = 0.0;
+
+	hp.Process(dt, inL, inR, GetParam(Parameters::hpCut)->Value(), tempOutL, tempOutR);
+	l -= tempOutL;
+	r -= tempOutR;
 }
 
 void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
@@ -309,8 +322,7 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		{
 			outL = statefulDrive.Process(outL * driveAmount, driveMix) / driveAmount;
 			outR = statefulDrive.Process(outR * driveAmount, driveMix) / driveAmount;
-			outL = driveFilterL.Process(dt, outL, GetParam(Parameters::driveFilter)->Value());
-			outR = driveFilterR.Process(dt, outR, GetParam(Parameters::driveFilter)->Value());
+			driveFilter.Process(dt, outL, outR, GetParam(Parameters::driveCutoff)->Value(), outL, outR);
 		}
 
 		// write to buffer

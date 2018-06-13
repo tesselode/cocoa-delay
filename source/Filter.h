@@ -43,3 +43,18 @@ private:
 	double band = 0.0;
 	double low = 0.0;
 };
+
+template<class T>
+class DualFilter
+{
+public:
+	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR)
+	{
+		outL = left.Process(dt, inL, cutoff);
+		outR = right.Process(dt, inR, cutoff);
+	}
+
+private:
+	T left;
+	T right;
+};

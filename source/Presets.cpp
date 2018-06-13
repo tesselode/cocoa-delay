@@ -22,7 +22,7 @@ void CocoaDelay::InitPresets()
 		hpCut, 0.019840,
 		driveGain, 1.310289,
 		driveMix, 1.000000,
-		driveFilter, 0.786016,
+		driveCutoff, 0.786016,
 		dryVolume, 1.000000,
 		wetVolume, 0.453125);
 
@@ -44,7 +44,7 @@ void CocoaDelay::InitPresets()
 		hpCut, 0.001000,
 		driveGain, 2.685615,
 		driveMix, 1.000000,
-		driveFilter, 0.827266,
+		driveCutoff, 0.827266,
 		dryVolume, 1.000000,
 		wetVolume, 0.322917);
 
@@ -66,7 +66,7 @@ void CocoaDelay::InitPresets()
 		hpCut, 0.001000,
 		driveGain, 3.681708,
 		driveMix, 0.500000,
-		driveFilter, 0.796328,
+		driveCutoff, 0.796328,
 		dryVolume, 1.000000,
 		wetVolume, 0.687500);
 
@@ -88,7 +88,7 @@ void CocoaDelay::InitPresets()
 		hpCut, 0.001000,
 		driveGain, 0.000000,
 		driveMix, 1.000000,
-		driveFilter, 1.000000,
+		driveCutoff, 1.000000,
 		dryVolume, 1.000000,
 		wetVolume, 0.500000);
 
@@ -110,7 +110,7 @@ void CocoaDelay::InitPresets()
 		hpCut, 0.001000,
 		driveGain, 0.100000,
 		driveMix, 1.000000,
-		driveFilter, 1.000000,
+		driveCutoff, 1.000000,
 		dryVolume, 1.000000,
 		wetVolume, 0.380208);
 
@@ -132,7 +132,7 @@ void CocoaDelay::InitPresets()
 		hpCut, 0.001000,
 		driveGain, 0.000000,
 		driveMix, 1.000000,
-		driveFilter, 1.000000,
+		driveCutoff, 1.000000,
 		dryVolume, 1.000000,
 		wetVolume, 0.500000);
 
