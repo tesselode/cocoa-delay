@@ -213,13 +213,6 @@ void CocoaDelay::UpdateParameters()
 	stationaryPanAmount += (stationaryPanAmountTarget - stationaryPanAmount) * 100.0 * dt;
 	auto circularPanAmountTarget = (currentPanMode == PanModes::circular ? panAmount : 0.0);
 	circularPanAmount += (circularPanAmountTarget - circularPanAmount) * 100.0 * dt;
-
-	// filter mix smoothing
-	auto lpMode = (FilterModes)(int)GetParam(Parameters::lpMode)->Value();
-	lp1Mix += ((lpMode == FilterModes::onePole ? 1.0 : 0.0) - lp1Mix) * 100.0 * dt;
-	lp2Mix += ((lpMode == FilterModes::twoPole ? 1.0 : 0.0) - lp2Mix) * 100.0 * dt;
-	lp4Mix += ((lpMode == FilterModes::fourPole ? 1.0 : 0.0) - lp4Mix) * 100.0 * dt;
-	lpSvfMix += ((lpMode == FilterModes::stateVariable ? 1.0 : 0.0) - lpSvfMix) * 100.0 * dt;
 }
 
 void CocoaDelay::UpdateDucking(double input)
@@ -259,29 +252,6 @@ double CocoaDelay::GetSample(std::vector<double> &buffer, double position)
 	return interpolate(x, y0, y1, y2, y3);
 }
 
-void CocoaDelay::LowPass(double & l, double & r)
-{
-	auto inL = l;
-	auto inR = r;
-	auto tempOutL = 0.0;
-	auto tempOutR = 0.0;
-
-	l = 0.0;
-	r = 0.0;
-	lp1.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
-	l += tempOutL * lp1Mix;
-	r += tempOutR * lp1Mix;
-	lp2.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
-	l += tempOutL * lp2Mix;
-	r += tempOutR * lp2Mix;
-	lp4.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
-	l += tempOutL * lp4Mix;
-	r += tempOutR * lp4Mix;
-	lpSvf.Process(dt, inL, inR, GetParam(Parameters::lpCut)->Value(), tempOutL, tempOutR);
-	l += tempOutL * lpSvfMix;
-	r += tempOutR * lpSvfMix;
-}
-
 void CocoaDelay::HighPass(double & l, double & r)
 {
 	auto inL = l;
@@ -312,7 +282,7 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
-		LowPass(outL, outR);
+		lp.LowPass(dt, outL, outR, GetParam(Parameters::lpCut)->Value());
 		HighPass(outL, outR);
 
 		// drive
@@ -370,6 +340,9 @@ void CocoaDelay::OnParamChange(int paramIdx)
 
 	switch (paramIdx)
 	{
+	case Parameters::lpMode:
+		lp.SetMode((FilterModes)(int)GetParam(Parameters::lpMode)->Value());
+		break;
 	case Parameters::tempoSyncTime:
 	{
 		auto tempoSyncTime = (TempoSyncTimes)(int)GetParam(Parameters::tempoSyncTime)->Value();

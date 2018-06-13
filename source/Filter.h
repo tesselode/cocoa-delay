@@ -2,6 +2,15 @@
 
 #include <cmath>
 
+enum FilterModes
+{
+	onePole,
+	twoPole,
+	fourPole,
+	stateVariable,
+	numFilterModes
+};
+
 class OnePoleFilter
 {
 public:
@@ -57,4 +66,25 @@ public:
 private:
 	T left;
 	T right;
+};
+
+
+class MultiFilter
+{
+public:
+	void SetMode(FilterModes m) { mode = m; }
+	void LowPass(double dt, double &l, double &r, double cutoff);
+
+private:
+	void UpdateFilterMixes(double dt);
+
+	FilterModes mode = FilterModes::onePole;
+	DualFilter<OnePoleFilter> filter1;
+	DualFilter<TwoPoleFilter> filter2;
+	DualFilter<FourPoleFilter> filter4;
+	DualFilter<StateVariableFilter> filterSvf;
+	double filter1Mix = 0.0;
+	double filter2Mix = 0.0;
+	double filter4Mix = 0.0;
+	double filterSvfMix = 0.0;
 };

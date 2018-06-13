@@ -63,15 +63,6 @@ enum TempoSyncTimes
 	numTempoSyncTimes
 };
 
-enum FilterModes
-{
-	onePole,
-	twoPole,
-	fourPole,
-	stateVariable,
-	numFilterModes
-};
-
 enum PanModes
 {
 	stationary,
@@ -104,7 +95,6 @@ private:
 	void UpdateLfo();
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
-	void LowPass(double &l, double &r);
 	void HighPass(double &l, double &r);
 
 	IGraphics* pGraphics;
@@ -122,16 +112,9 @@ private:
 	double parameterChangeVolume = 1.0;
 	double stationaryPanAmount = 0.0;
 	double circularPanAmount = 0.0;
-	double lp1Mix = 0.0;
-	double lp2Mix = 0.0;
-	double lp4Mix = 0.0;
-	double lpSvfMix = 0.0;
 
 	// filters
-	DualFilter<OnePoleFilter> lp1;
-	DualFilter<TwoPoleFilter> lp2;
-	DualFilter<FourPoleFilter> lp4;
-	DualFilter<StateVariableFilter> lpSvf;
+	MultiFilter lp;
 	DualFilter<OnePoleFilter> hp;
 
 	// drive
