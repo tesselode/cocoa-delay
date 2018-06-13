@@ -23,6 +23,7 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
+	GetParam(Parameters::driveQuad)->InitBool("Drive 4X", false);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -311,9 +312,13 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		auto driveMix = GetParam(Parameters::driveMix)->Value();
 		if (driveAmount > 0)
 		{
-			outL = statefulDrive.Process(outL * driveAmount, driveMix) / driveAmount;
-			outR = statefulDrive.Process(outR * driveAmount, driveMix) / driveAmount;
-			driveFilter.Process(dt, outL, outR, GetParam(Parameters::driveCutoff)->Value(), outL, outR);
+			auto iterations = GetParam(Parameters::driveQuad)->Value() ? 4 : 1;
+			for (int i = 0; i < iterations; i++)
+			{
+				outL = statefulDrive.Process(outL * driveAmount, driveMix) / driveAmount;
+				outR = statefulDrive.Process(outR * driveAmount, driveMix) / driveAmount;
+				driveFilter.Process(dt, outL, outR, GetParam(Parameters::driveCutoff)->Value(), outL, outR);
+			}
 		}
 
 		// write to buffer

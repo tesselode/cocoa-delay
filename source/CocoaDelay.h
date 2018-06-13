@@ -33,6 +33,7 @@ enum Parameters
 	driveGain,
 	driveMix,
 	driveCutoff,
+	driveQuad,
 	dryVolume,
 	wetVolume,
 	numParameters
