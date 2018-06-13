@@ -122,25 +122,25 @@ double CocoaDelay::GetDelayTime()
 	case tempoSyncOff:
 		delayTime = GetParam(Parameters::delayTime)->Value();
 		break;
-	case whole: delayTime = beatLength * 4; break;
-	case dottedHalf: delayTime = beatLength * 3; break;
-	case half: delayTime = beatLength * 2; break;
-	case tripletHalf: delayTime = beatLength * 4 / 3; break;
-	case dottedQuarter: delayTime = beatLength * 3 / 2; break;
-	case quarter: delayTime = beatLength * 1; break;
-	case tripletQuarter: delayTime = beatLength * 2 / 3; break;
-	case dottedEighth: delayTime = beatLength * 3 / 4; break;
-	case eighth: delayTime = beatLength * 1 / 2; break;
-	case tripletEighth: delayTime = beatLength * 1 / 3; break;
-	case dottedSixteenth: delayTime = beatLength * 3 / 8; break;
-	case sixteenth: delayTime = beatLength * 1 / 4; break;
-	case tripletSixteenth: delayTime = beatLength * 1 / 6; break;
-	case dottedThirtysecond: delayTime = beatLength * 3 / 16; break;
-	case thirtysecond: delayTime = beatLength * 1 / 8; break;
-	case tripletThirtysecond: delayTime = beatLength * 1 / 12; break;
-	case dottedSixtyforth: delayTime = beatLength * 3 / 32; break;
-	case sixtyforth: delayTime = beatLength * 1 / 16; break;
-	case tripletSixtyforth: delayTime = beatLength * 1 / 24; break;
+	case whole:               delayTime = beatLength * 4;    break;
+	case dottedHalf:          delayTime = beatLength * 3;    break;
+	case half:                delayTime = beatLength * 2;    break;
+	case tripletHalf:         delayTime = beatLength * 4/3;  break;
+	case dottedQuarter:       delayTime = beatLength * 3/2;  break;
+	case quarter:             delayTime = beatLength * 1;    break;
+	case tripletQuarter:      delayTime = beatLength * 2/3;  break;
+	case dottedEighth:        delayTime = beatLength * 3/4;  break;
+	case eighth:              delayTime = beatLength * 1/2;  break;
+	case tripletEighth:       delayTime = beatLength * 1/3;  break;
+	case dottedSixteenth:     delayTime = beatLength * 3/8;  break;
+	case sixteenth:           delayTime = beatLength * 1/4;  break;
+	case tripletSixteenth:    delayTime = beatLength * 1/6;  break;
+	case dottedThirtysecond:  delayTime = beatLength * 3/16; break;
+	case thirtysecond:        delayTime = beatLength * 1/8;  break;
+	case tripletThirtysecond: delayTime = beatLength * 1/12; break;
+	case dottedSixtyforth:    delayTime = beatLength * 3/32; break;
+	case sixtyforth:          delayTime = beatLength * 1/16; break;
+	case tripletSixtyforth:   delayTime = beatLength * 1/24; break;
 	}
 
 	// modulation
