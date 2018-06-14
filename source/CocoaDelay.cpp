@@ -23,7 +23,7 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
-	GetParam(Parameters::driveQuad)->InitBool("Drive 4X", false);
+	GetParam(Parameters::driveIterations)->InitInt("Drive iterations", 1, 1, 16);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -312,7 +312,7 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		auto driveMix = GetParam(Parameters::driveMix)->Value();
 		if (driveAmount > 0)
 		{
-			auto iterations = GetParam(Parameters::driveQuad)->Value() ? 4 : 1;
+			auto iterations = (int)GetParam(Parameters::driveIterations)->Value();
 			for (int i = 0; i < iterations; i++)
 			{
 				outL = statefulDrive.Process(outL * driveAmount, driveMix) / driveAmount;
