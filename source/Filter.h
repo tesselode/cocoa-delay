@@ -14,7 +14,7 @@ enum FilterModes
 class OnePoleFilter
 {
 public:
-	double Process(double dt, double input, double cutoff);
+	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
 	double a = 0.0;
@@ -23,7 +23,7 @@ private:
 class TwoPoleFilter
 {
 public:
-	double Process(double dt, double input, double cutoff);
+	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
 	double a = 0.0;
@@ -33,7 +33,7 @@ private:
 class FourPoleFilter
 {
 public:
-	double Process(double dt, double input, double cutoff);
+	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
 	double a = 0.0;
@@ -45,7 +45,7 @@ private:
 class StateVariableFilter
 {
 public:
-	double Process(double dt, double input, double cutoff);
+	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
 	double pi = 2 * acos(0.0);
@@ -57,10 +57,10 @@ template<class T>
 class DualFilter
 {
 public:
-	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR)
+	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false)
 	{
-		outL = left.Process(dt, inL, cutoff);
-		outR = right.Process(dt, inR, cutoff);
+		outL = left.Process(dt, inL, cutoff, highPass);
+		outR = right.Process(dt, inR, cutoff, highPass);
 	}
 
 private:
@@ -73,7 +73,7 @@ class MultiFilter
 {
 public:
 	void SetMode(FilterModes m) { mode = m; }
-	void LowPass(double dt, double &l, double &r, double cutoff);
+	void Process(double dt, double &l, double &r, double cutoff, bool highPass = false);
 
 private:
 	void UpdateFilterMixes(double dt);

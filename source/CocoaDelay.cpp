@@ -17,12 +17,12 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::duckAmount)->InitDouble("Ducking amount", 0.0, 0.0, 10.0, .01, "", "", 1.0);
 	GetParam(Parameters::duckAttackSpeed)->InitDouble("Ducking attack", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::duckReleaseSpeed)->InitDouble("Ducking release", 10.0, .1, 100.0, .01, "", "", 2.0);
-	GetParam(Parameters::lpMode)->InitEnum("Low pass mode", FilterModes::onePole, FilterModes::numFilterModes);
-	GetParam(Parameters::lpCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
-	GetParam(Parameters::hpCut)->InitDouble("High pass", 0.001, 0.001, .99, .01, "", "", 2.0);
+	GetParam(Parameters::filterMode)->InitEnum("Filter mode", FilterModes::onePole, FilterModes::numFilterModes);
+	GetParam(Parameters::lowCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
+	GetParam(Parameters::highCut)->InitDouble("High pass cutoff", 0.001, 0.001, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
-	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter", 1.0, .01, 1.0, .01);
+	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter cutoff", 1.0, .01, 1.0, .01);
 	GetParam(Parameters::driveIterations)->InitInt("Drive iterations", 1, 1, 16);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
@@ -55,10 +55,10 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::panMode)->SetDisplayText(PanModes::pingPong, "Ping pong");
 
 	// filter mode display text
-	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::onePole, "1 pole");
-	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::twoPole, "2 pole");
-	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::fourPole, "4 pole");
-	GetParam(Parameters::lpMode)->SetDisplayText(FilterModes::stateVariable, "State variable");
+	GetParam(Parameters::filterMode)->SetDisplayText(FilterModes::onePole, "1 pole");
+	GetParam(Parameters::filterMode)->SetDisplayText(FilterModes::twoPole, "2 pole");
+	GetParam(Parameters::filterMode)->SetDisplayText(FilterModes::fourPole, "4 pole");
+	GetParam(Parameters::filterMode)->SetDisplayText(FilterModes::stateVariable, "State variable");
 }
 
 void CocoaDelay::InitGraphics()
@@ -87,9 +87,9 @@ void CocoaDelay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 136 * 4, 62 * 4, Parameters::duckAttackSpeed, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 156 * 4, 62 * 4, Parameters::duckReleaseSpeed, &knobLeft));
 
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 38 * 4, 108 * 4, Parameters::lpMode, &filterModesMenu));
-	pGraphics->AttachControl(new Knob(this, 54 * 4, 100 * 4, Parameters::lpCut, &knobRight));
-	pGraphics->AttachControl(new Knob(this, 82 * 4, 100 * 4, Parameters::hpCut, &knobLeft));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 38 * 4, 108 * 4, Parameters::filterMode, &filterModesMenu));
+	pGraphics->AttachControl(new Knob(this, 54 * 4, 100 * 4, Parameters::lowCut, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 82 * 4, 100 * 4, Parameters::highCut, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 110 * 4, 100 * 4, Parameters::driveGain, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 130 * 4, 100 * 4, Parameters::driveMix, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 150 * 4, 100 * 4, Parameters::driveCutoff, &knobRight));
@@ -253,18 +253,6 @@ double CocoaDelay::GetSample(std::vector<double> &buffer, double position)
 	return interpolate(x, y0, y1, y2, y3);
 }
 
-void CocoaDelay::HighPass(double & l, double & r)
-{
-	auto inL = l;
-	auto inR = r;
-	auto tempOutL = 0.0;
-	auto tempOutR = 0.0;
-
-	hp.Process(dt, inL, inR, GetParam(Parameters::hpCut)->Value(), tempOutL, tempOutR);
-	l -= tempOutL;
-	r -= tempOutR;
-}
-
 void CocoaDelay::WriteToBuffer(double** inputs, int s, double outL, double outR)
 {
 	auto writeL = 0.0, writeR = 0.0;
@@ -304,8 +292,8 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
-		lp.LowPass(dt, outL, outR, GetParam(Parameters::lpCut)->Value());
-		HighPass(outL, outR);
+		lp.Process(dt, outL, outR, GetParam(Parameters::lowCut)->Value());
+		hp.Process(dt, outL, outR, GetParam(Parameters::highCut)->Value(), true);
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveGain)->Value();
@@ -350,8 +338,9 @@ void CocoaDelay::OnParamChange(int paramIdx)
 
 	switch (paramIdx)
 	{
-	case Parameters::lpMode:
-		lp.SetMode((FilterModes)(int)GetParam(Parameters::lpMode)->Value());
+	case Parameters::filterMode:
+		lp.SetMode((FilterModes)(int)GetParam(Parameters::filterMode)->Value());
+		hp.SetMode((FilterModes)(int)GetParam(Parameters::filterMode)->Value());
 		break;
 	case Parameters::tempoSyncTime:
 	{

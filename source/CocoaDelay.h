@@ -27,9 +27,9 @@ enum Parameters
 	duckAmount,
 	duckAttackSpeed,
 	duckReleaseSpeed,
-	lpMode,
-	lpCut,
-	hpCut,
+	filterMode,
+	lowCut,
+	highCut,
 	driveGain,
 	driveMix,
 	driveCutoff,
@@ -96,7 +96,6 @@ private:
 	void UpdateLfo();
 	void UpdateDrift();
 	double GetSample(std::vector<double> &buffer, double position);
-	void HighPass(double &l, double &r);
 	void WriteToBuffer(double** inputs, int s, double outL, double outR);
 
 	IGraphics* pGraphics;
@@ -117,7 +116,7 @@ private:
 
 	// filters
 	MultiFilter lp;
-	DualFilter<OnePoleFilter> hp;
+	MultiFilter hp;
 
 	// drive
 	StatefulDrive statefulDrive;

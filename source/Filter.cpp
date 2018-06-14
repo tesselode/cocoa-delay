@@ -1,23 +1,23 @@
 #include "Filter.h"
 
-double OnePoleFilter::Process(double dt, double input, double cutoff)
+double OnePoleFilter::Process(double dt, double input, double cutoff, bool highPass)
 {
 	cutoff *= 44100 * dt;
 	cutoff = cutoff > 1.0 ? 1.0 : cutoff;
 	a += (input - a) * cutoff;
-	return a;
+	return highPass ? input - a : a;
 }
 
-double TwoPoleFilter::Process(double dt, double input, double cutoff)
+double TwoPoleFilter::Process(double dt, double input, double cutoff, bool highPass)
 {
 	cutoff *= 44100 * dt;
 	cutoff = cutoff > 1.0 ? 1.0 : cutoff;
 	a += (input - a) * cutoff;
 	b += (a - b) * cutoff;
-	return b;
+	return highPass ? input - b : b;
 }
 
-double FourPoleFilter::Process(double dt, double input, double cutoff)
+double FourPoleFilter::Process(double dt, double input, double cutoff, bool highPass)
 {
 	cutoff *= 44100 * dt;
 	cutoff = cutoff > 1.0 ? 1.0 : cutoff;
@@ -25,10 +25,10 @@ double FourPoleFilter::Process(double dt, double input, double cutoff)
 	b += (a - b) * cutoff;
 	c += (b - c) * cutoff;
 	d += (c - d) * cutoff;
-	return d;
+	return highPass ? input - d : d;
 }
 
-double StateVariableFilter::Process(double dt, double input, double cutoff)
+double StateVariableFilter::Process(double dt, double input, double cutoff, bool highPass)
 {
 	input *= .9;
 
@@ -42,7 +42,7 @@ double StateVariableFilter::Process(double dt, double input, double cutoff)
 	band += f * high;
 	low += f * band;
 
-	return low;
+	return highPass ? high : low;
 }
 
 void MultiFilter::UpdateFilterMixes(double dt)
@@ -53,7 +53,7 @@ void MultiFilter::UpdateFilterMixes(double dt)
 	filterSvfMix += ((mode == FilterModes::stateVariable ? 1.0 : 0.0) - filterSvfMix) * 100.0 * dt;
 }
 
-void MultiFilter::LowPass(double dt, double & l, double & r, double cutoff)
+void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool highPass)
 {
 	UpdateFilterMixes(dt);
 
@@ -61,19 +61,22 @@ void MultiFilter::LowPass(double dt, double & l, double & r, double cutoff)
 	auto inR = r;
 	auto tempOutL = 0.0;
 	auto tempOutR = 0.0;
-
 	l = 0.0;
 	r = 0.0;
-	filter1.Process(dt, inL, inR, cutoff, tempOutL, tempOutR);
+
+	filter1.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 	l += tempOutL * filter1Mix;
 	r += tempOutR * filter1Mix;
-	filter2.Process(dt, inL, inR, cutoff, tempOutL, tempOutR);
+
+	filter2.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 	l += tempOutL * filter2Mix;
 	r += tempOutR * filter2Mix;
-	filter4.Process(dt, inL, inR, cutoff, tempOutL, tempOutR);
+
+	filter4.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 	l += tempOutL * filter4Mix;
 	r += tempOutR * filter4Mix;
-	filterSvf.Process(dt, inL, inR, cutoff, tempOutL, tempOutR);
+
+	filterSvf.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 	l += tempOutL * filterSvfMix;
 	r += tempOutR * filterSvfMix;
 }
