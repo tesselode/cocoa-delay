@@ -57,7 +57,7 @@ private:
 class DualFilterBase
 {
 public:
-	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false) {}
+	virtual void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false) {}
 };
 
 template<class T>
@@ -83,11 +83,11 @@ public:
 
 private:
 	FilterModes mode = FilterModes::onePole;
-	std::array<DualFilterBase, numFilterModes> filters = {
-		DualFilter<OnePoleFilter>(),
-		DualFilter<TwoPoleFilter>(),
-		DualFilter<FourPoleFilter>(),
-		DualFilter<StateVariableFilter>()
+	std::array<std::unique_ptr<DualFilterBase>, numFilterModes> filters = {
+		std::unique_ptr<DualFilterBase>(new DualFilter<OnePoleFilter>()),
+		std::unique_ptr<DualFilterBase>(new DualFilter<TwoPoleFilter>()),
+		std::unique_ptr<DualFilterBase>(new DualFilter<FourPoleFilter>()),
+		std::unique_ptr<DualFilterBase>(new DualFilter<StateVariableFilter>())
 	};
 	std::array<double, numFilterModes> mix = {0.0, 0.0, 0.0, 0.0};
 };

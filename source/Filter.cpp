@@ -59,7 +59,7 @@ void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool
 
 	for (int i = 0; i < std::size(filters); i++)
 	{
-		filters[i].Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
+		filters[i]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 		l += tempOutL * mix[i];
 		r += tempOutR * mix[i];
 	}
