@@ -45,17 +45,10 @@ double StateVariableFilter::Process(double dt, double input, double cutoff, bool
 	return highPass ? high : low;
 }
 
-void MultiFilter::UpdateFilterMixes(double dt)
-{
-	filter1Mix += ((mode == FilterModes::onePole ? 1.0 : 0.0) - filter1Mix) * 100.0 * dt;
-	filter2Mix += ((mode == FilterModes::twoPole ? 1.0 : 0.0) - filter2Mix) * 100.0 * dt;
-	filter4Mix += ((mode == FilterModes::fourPole ? 1.0 : 0.0) - filter4Mix) * 100.0 * dt;
-	filterSvfMix += ((mode == FilterModes::stateVariable ? 1.0 : 0.0) - filterSvfMix) * 100.0 * dt;
-}
-
 void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool highPass)
 {
-	UpdateFilterMixes(dt);
+	for (int i = 0; i < std::size(mix); i++)
+		mix[i] += ((mode == i ? 1.0 : 0.0) - mix[i]) * 100.0 * dt;
 
 	auto inL = l;
 	auto inR = r;
@@ -64,19 +57,10 @@ void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool
 	l = 0.0;
 	r = 0.0;
 
-	filter1.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
-	l += tempOutL * filter1Mix;
-	r += tempOutR * filter1Mix;
-
-	filter2.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
-	l += tempOutL * filter2Mix;
-	r += tempOutR * filter2Mix;
-
-	filter4.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
-	l += tempOutL * filter4Mix;
-	r += tempOutR * filter4Mix;
-
-	filterSvf.Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
-	l += tempOutL * filterSvfMix;
-	r += tempOutR * filterSvfMix;
+	for (int i = 0; i < std::size(filters); i++)
+	{
+		filters[i].Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
+		l += tempOutL * mix[i];
+		r += tempOutR * mix[i];
+	}
 }

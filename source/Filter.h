@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cmath>
 
 enum FilterModes
@@ -53,8 +54,14 @@ private:
 	double low = 0.0;
 };
 
+class DualFilterBase
+{
+public:
+	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false) {}
+};
+
 template<class T>
-class DualFilter
+class DualFilter : public DualFilterBase
 {
 public:
 	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false)
@@ -68,7 +75,6 @@ private:
 	T right;
 };
 
-
 class MultiFilter
 {
 public:
@@ -76,15 +82,12 @@ public:
 	void Process(double dt, double &l, double &r, double cutoff, bool highPass = false);
 
 private:
-	void UpdateFilterMixes(double dt);
-
 	FilterModes mode = FilterModes::onePole;
-	DualFilter<OnePoleFilter> filter1;
-	DualFilter<TwoPoleFilter> filter2;
-	DualFilter<FourPoleFilter> filter4;
-	DualFilter<StateVariableFilter> filterSvf;
-	double filter1Mix = 0.0;
-	double filter2Mix = 0.0;
-	double filter4Mix = 0.0;
-	double filterSvfMix = 0.0;
+	std::array<DualFilterBase, numFilterModes> filters = {
+		DualFilter<OnePoleFilter>(),
+		DualFilter<TwoPoleFilter>(),
+		DualFilter<FourPoleFilter>(),
+		DualFilter<StateVariableFilter>()
+	};
+	std::array<double, numFilterModes> mix = {0.0, 0.0, 0.0, 0.0};
 };
