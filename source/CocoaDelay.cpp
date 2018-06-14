@@ -87,12 +87,13 @@ void CocoaDelay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 136 * 4, 62 * 4, Parameters::duckAttackSpeed, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 156 * 4, 62 * 4, Parameters::duckReleaseSpeed, &knobLeft));
 
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 38 * 4, 108 * 4, Parameters::filterMode, &filterModesMenu));
-	pGraphics->AttachControl(new Knob(this, 54 * 4, 100 * 4, Parameters::lowCut, &knobRight));
-	pGraphics->AttachControl(new Knob(this, 82 * 4, 100 * 4, Parameters::highCut, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 110 * 4, 100 * 4, Parameters::driveGain, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 130 * 4, 100 * 4, Parameters::driveMix, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 150 * 4, 100 * 4, Parameters::driveCutoff, &knobRight));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 33 * 4, 108 * 4, Parameters::filterMode, &filterModesMenu));
+	pGraphics->AttachControl(new Knob(this, 48 * 4, 100 * 4, Parameters::lowCut, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 68 * 4, 100 * 4, Parameters::highCut, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 96 * 4, 100 * 4, Parameters::driveGain, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 116 * 4, 100 * 4, Parameters::driveMix, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 136 * 4, 100 * 4, Parameters::driveCutoff, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 156 * 4, 100 * 4, Parameters::driveIterations, &knobLeft));
 
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 76 * 4, Parameters::dryVolume, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 0 * 4, 100 * 4, Parameters::wetVolume, &knobLeft));
