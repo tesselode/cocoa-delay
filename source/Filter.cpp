@@ -45,22 +45,50 @@ double StateVariableFilter::Process(double dt, double input, double cutoff, bool
 	return highPass ? high : low;
 }
 
+void MultiFilter::SetMode(FilterModes m)
+{
+	if (currentMode != m)
+	{
+		previousMode = currentMode;
+		currentMode = m;
+		crossfading = true;
+		currentModeMix = 0.0;
+	}
+}
+
 void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool highPass)
 {
-	for (int i = 0; i < std::size(mix); i++)
-		mix[i] += ((mode == i ? 1.0 : 0.0) - mix[i]) * 100.0 * dt;
-
-	auto inL = l;
-	auto inR = r;
-	auto tempOutL = 0.0;
-	auto tempOutR = 0.0;
-	l = 0.0;
-	r = 0.0;
-
-	for (int i = 0; i < std::size(filters); i++)
+	switch (crossfading)
 	{
-		filters[i]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
-		l += tempOutL * mix[i];
-		r += tempOutR * mix[i];
+	case true:
+	{
+		currentModeMix += 100.0 * dt;
+		if (currentModeMix >= 1.0)
+		{
+			auto current = currentMode;
+			currentModeMix = 1.0;
+			crossfading = false;
+			filters[previousMode]->Reset();
+		}
+
+		auto inL = l;
+		auto inR = r;
+		auto tempOutL = 0.0;
+		auto tempOutR = 0.0;
+		l = 0.0;
+		r = 0.0;
+
+		filters[previousMode]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
+		l += tempOutL * (1.0 - currentModeMix);
+		r += tempOutR * (1.0 - currentModeMix);
+		filters[currentMode]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
+		l += tempOutL * currentModeMix;
+		r += tempOutR * currentModeMix;
+
+		break;
+	}
+	case false:
+		filters[currentMode]->Process(dt, l, r, cutoff, l, r, highPass);
+		break;
 	}
 }

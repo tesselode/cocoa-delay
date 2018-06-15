@@ -9,12 +9,17 @@ enum FilterModes
 	twoPole,
 	fourPole,
 	stateVariable,
-	numFilterModes
+	numFilterModes,
+	noFilter
 };
 
 class OnePoleFilter
 {
 public:
+	void Reset()
+	{
+		a = 0.0;
+	}
 	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
@@ -24,6 +29,11 @@ private:
 class TwoPoleFilter
 {
 public:
+	void Reset()
+	{
+		a = 0.0;
+		b = 0.0;
+	}
 	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
@@ -34,6 +44,13 @@ private:
 class FourPoleFilter
 {
 public:
+	void Reset()
+	{
+		a = 0.0;
+		b = 0.0;
+		c = 0.0;
+		d = 0.0;
+	}
 	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
@@ -46,6 +63,11 @@ private:
 class StateVariableFilter
 {
 public:
+	void Reset()
+	{
+		band = 0.0;
+		low = 0.0;
+	}
 	double Process(double dt, double input, double cutoff, bool highPass = false);
 
 private:
@@ -57,6 +79,7 @@ private:
 class DualFilterBase
 {
 public:
+	virtual void Reset() {}
 	virtual void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false) {}
 };
 
@@ -64,6 +87,11 @@ template<class T>
 class DualFilter : public DualFilterBase
 {
 public:
+	void Reset()
+	{
+		left.Reset();
+		right.Reset();
+	}
 	void Process(double dt, double inL, double inR, double cutoff, double &outL, double &outR, bool highPass = false)
 	{
 		outL = left.Process(dt, inL, cutoff, highPass);
@@ -78,16 +106,18 @@ private:
 class MultiFilter
 {
 public:
-	void SetMode(FilterModes m) { mode = m; }
+	void SetMode(FilterModes m);
 	void Process(double dt, double &l, double &r, double cutoff, bool highPass = false);
 
 private:
-	FilterModes mode = FilterModes::onePole;
 	std::array<std::unique_ptr<DualFilterBase>, numFilterModes> filters = {
 		std::unique_ptr<DualFilterBase>(new DualFilter<OnePoleFilter>()),
 		std::unique_ptr<DualFilterBase>(new DualFilter<TwoPoleFilter>()),
 		std::unique_ptr<DualFilterBase>(new DualFilter<FourPoleFilter>()),
 		std::unique_ptr<DualFilterBase>(new DualFilter<StateVariableFilter>())
 	};
-	std::array<double, numFilterModes> mix = {0.0, 0.0, 0.0, 0.0};
+	FilterModes currentMode = FilterModes::onePole;
+	FilterModes previousMode = FilterModes::noFilter;
+	bool crossfading = false;
+	double currentModeMix = 1.0;
 };
