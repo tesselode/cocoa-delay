@@ -50,16 +50,13 @@ The ducking section allows you to to decrease the volume of the echoes when the 
 
 The filter section allows you to remove high or low frequencies from the signal each time it is written to the buffer, making each echo sound duller or brighter.
 
-- **LP** - controls the low-pass filter, which removes frequencies above the specified cutoff.
-	- **Mode** - sets the low-pass filter type.
-		- **1P** - a 6dB one-pole filter with a gentle, smooth sound.
-		- **2P** - a 12dB two-pole filter with a steeper cutoff.
-		- **4P** - a 24dB four-pole filter with a clear cutoff.
-		- **SVF** - a state variable filter with a more resonant sound.
-	- **Cutoff** - sets the frequency above which sound will be removed.
-
-- **HP** - controls the high-pass filter, which removes frequencies below the specified cutoff. The filter is a 6dB one-pole filter.
-	- **Cutoff** - sets the frequency below which sound will be removed.
+- **Mode** - sets the low-pass filter type.
+	- **1P** - a 6dB one-pole filter with a gentle, smooth sound.
+	- **2P** - a 12dB two-pole filter with a steeper cutoff.
+	- **4P** - a 24dB four-pole filter with a clear cutoff.
+	- **SVF** - a state variable filter with a more resonant sound.
+- **Low cut** - sets the frequency above which sounds will be removed.
+- **High cut** - sets the frequency below which sounds will be removed.
 
 ## Drive
 
@@ -70,3 +67,4 @@ The drive section adds a subtle (or un-subtle) saturation effect to the signal b
 - **Gain**: sets the amount to boost the audio before applying saturation. Turn this knob all the way to the left to bypass the drive section completely.
 - **Mix**: sets the amount of saturated audio to mix with the unsaturated audio.
 - **Filter**: sets the cutoff of a low-pass filter to apply to the audio after saturation. The filter is a 12dB two-pole filter.
+- **Iterations**: sets the number of times to run the signal through the drive section, from 1 to 16. Higher values can give a thicker, lusher distortion at the cost of increased CPU usage.
