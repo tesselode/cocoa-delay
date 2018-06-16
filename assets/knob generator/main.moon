@@ -11,17 +11,16 @@ color =
 drawKnob = (angle, originAngle) -> with love.graphics
 	angle = math.rad angle
 	originAngle = math.rad originAngle
-	.setBlendMode 'alpha', 'premultiplied'
 	.push 'all'
+	.setBlendMode 'alpha', 'premultiplied'
+	.setColor color.gray
+	.circle 'fill', .5, .5, knobRadius + outlineThickness / 2, 64
+	.setColor color.accent
+	.arc 'fill', 'pie', .5, .5, knobRadius + outlineThickness / 2, angle, originAngle, 64
 	.setColor color.body
 	.circle 'fill', .5, .5, knobRadius - outlineThickness / 2, 64
-	.setColor color.gray
-	.setLineWidth outlineThickness
-	.circle 'line', .5, .5, knobRadius, 64
-	.setBlendMode 'alpha', 'alphamultiply'
 	.setColor color.accent
 	.circle 'fill', .5 + .2 * math.cos(angle), .5 + .2 * math.sin(angle), 1/16, 64
-	.arc 'line', 'open', .5, .5, knobRadius, angle, originAngle, 64
 	.pop!
 
 drawKnobStrip = (originAngle) -> with love.graphics
