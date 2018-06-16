@@ -13,7 +13,7 @@
 const int numPrograms = 128;
 const int tapeLength = 10;
 
-enum Parameters
+enum class Parameters
 {
 	delayTime,
 	lfoAmount,
@@ -39,7 +39,7 @@ enum Parameters
 	numParameters
 };
 
-enum TempoSyncTimes
+enum class TempoSyncTimes
 {
 	tempoSyncOff,
 	whole,
@@ -64,7 +64,7 @@ enum TempoSyncTimes
 	numTempoSyncTimes
 };
 
-enum PanModes
+enum class PanModes
 {
 	stationary,
 	pingPong,
@@ -78,6 +78,7 @@ public:
 	CocoaDelay(IPlugInstanceInfo instanceInfo);
 	~CocoaDelay();
 
+	IParam* GetParam(Parameters p) { return IPlug::GetParam((int)p); }
 	void Reset();
 	void OnParamChange(int paramIdx);
 	void ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames);

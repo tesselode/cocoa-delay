@@ -68,7 +68,7 @@ void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool
 			auto current = currentMode;
 			currentModeMix = 1.0;
 			crossfading = false;
-			filters[previousMode]->Reset();
+			filters[(int)previousMode]->Reset();
 		}
 
 		auto inL = l;
@@ -78,17 +78,17 @@ void MultiFilter::Process(double dt, double & l, double & r, double cutoff, bool
 		l = 0.0;
 		r = 0.0;
 
-		filters[previousMode]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
+		filters[(int)previousMode]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 		l += tempOutL * (1.0 - currentModeMix);
 		r += tempOutR * (1.0 - currentModeMix);
-		filters[currentMode]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
+		filters[(int)currentMode]->Process(dt, inL, inR, cutoff, tempOutL, tempOutR, highPass);
 		l += tempOutL * currentModeMix;
 		r += tempOutR * currentModeMix;
 
 		break;
 	}
 	case false:
-		filters[currentMode]->Process(dt, l, r, cutoff, l, r, highPass);
+		filters[(int)currentMode]->Process(dt, l, r, cutoff, l, r, highPass);
 		break;
 	}
 }

@@ -3,7 +3,7 @@
 #include <array>
 #include <cmath>
 
-enum FilterModes
+enum class FilterModes
 {
 	onePole,
 	twoPole,
@@ -110,7 +110,7 @@ public:
 	void Process(double dt, double &l, double &r, double cutoff, bool highPass = false);
 
 private:
-	std::array<std::unique_ptr<DualFilterBase>, numFilterModes> filters = {
+	std::array<std::unique_ptr<DualFilterBase>, (int)FilterModes::numFilterModes> filters = {
 		std::unique_ptr<DualFilterBase>(new DualFilter<OnePoleFilter>()),
 		std::unique_ptr<DualFilterBase>(new DualFilter<TwoPoleFilter>()),
 		std::unique_ptr<DualFilterBase>(new DualFilter<FourPoleFilter>()),
