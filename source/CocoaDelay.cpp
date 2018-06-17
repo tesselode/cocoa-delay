@@ -24,6 +24,7 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter cutoff", 1.0, .01, 1.0, .01);
 	GetParam(Parameters::driveIterations)->InitInt("Drive iterations", 1, 1, 16);
+	GetParam(Parameters::lofiRate)->InitDouble("Lofi rate", 1.0 / 44100.0, 1.0 / 44100.0, 1.0 / 11025.0, .01, "", "", 3.0);
 	GetParam(Parameters::dryVolume)->InitDouble("Dry volume", 1.0, 0.0, 2.0, .01);
 	GetParam(Parameters::wetVolume)->InitDouble("Wet volume", .5, 0.0, 2.0, .01);
 
@@ -308,6 +309,13 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 				outR = statefulDrive.Process(outR * driveAmount, driveMix) / driveAmount;
 				driveFilter.Process(dt, outL, outR, GetParam(Parameters::driveCutoff)->Value(), outL, outR);
 			}
+		}
+
+		// lofi
+		if (GetParam(Parameters::lofiRate)->Value() != GetParam(Parameters::lofiRate)->GetMin())
+		{
+			outL = lofiL.Process(dt, outL, GetParam(Parameters::lofiRate)->Value());
+			outR = lofiR.Process(dt, outR, GetParam(Parameters::lofiRate)->Value());
 		}
 
 		// write to buffer

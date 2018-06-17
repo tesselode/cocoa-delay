@@ -9,6 +9,7 @@
     <ClCompile Include="Knob.cpp" />
     <ClCompile Include="StatefulDrive.cpp" />
     <ClCompile Include="Presets.cpp" />
+    <ClCompile Include="Lofi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CocoaDelay.h" />
@@ -21,6 +22,7 @@
     <ClInclude Include="StatefulDrive.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="PresetMenu.h" />
+    <ClInclude Include="Lofi.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CocoaDelay.rc" />

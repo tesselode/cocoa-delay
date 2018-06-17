@@ -4,6 +4,7 @@
 #include <cmath>
 #include "Filter.h"
 #include "Knob.h"
+#include "Lofi.h"
 #include "PresetMenu.h"
 #include "StatefulDrive.h"
 #include "Util.h"
@@ -34,6 +35,7 @@ enum class Parameters
 	driveMix,
 	driveCutoff,
 	driveIterations,
+	lofiRate,
 	dryVolume,
 	wetVolume,
 	numParameters
@@ -122,6 +124,10 @@ private:
 	// drive
 	StatefulDrive statefulDrive;
 	DualFilter<TwoPoleFilter> driveFilter;
+
+	// lofi
+	Lofi lofiL;
+	Lofi lofiR;
 
 	// modulation
 	double duckFollower = 0.0;
