@@ -2,9 +2,9 @@
 
 void CocoaDelay::InitPresets()
 {
-	MakeDefaultPreset("Init", 1);
+	MakeDefaultPreset("Init", numPrograms);
 
-	MakePresetFromNamedParams("Blue Skies", 20,
+	/*MakePresetFromNamedParams("Blue Skies", 20,
 		(int)Parameters::delayTime, 0.200000,
 		(int)Parameters::lfoAmount, 0.000000,
 		(int)Parameters::lfoFrequency, 1.175000,
@@ -136,5 +136,5 @@ void CocoaDelay::InitPresets()
 		(int)Parameters::dryVolume, 1.000000,
 		(int)Parameters::wetVolume, 0.500000);
 
-	MakeDefaultPreset("-", numPrograms);
+	MakeDefaultPreset("-", numPrograms);*/
 }

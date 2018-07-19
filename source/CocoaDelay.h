@@ -82,6 +82,8 @@ public:
 	IParam* GetParam(Parameters p) { return IPlug::GetParam((int)p); }
 	void Reset();
 	void OnParamChange(int paramIdx);
+	bool SerializeState(ByteChunk * chunk);
+	int UnserializeState(ByteChunk * chunk, int startPos);
 	void ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames);
 
 private:

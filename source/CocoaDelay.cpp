@@ -375,3 +375,23 @@ void CocoaDelay::OnParamChange(int paramIdx)
 	}
 	}
 }
+
+bool CocoaDelay::SerializeState(ByteChunk* chunk)
+{
+	TRACE;
+	IMutexLock(this);
+
+	int paramVersion = 1;
+	chunk->Put(&paramVersion);
+	return IPlugBase::SerializeParams(chunk);
+}
+
+int CocoaDelay::UnserializeState(ByteChunk* chunk, int startPos)
+{
+	TRACE;
+	IMutexLock lock(this);
+
+	int paramVersion;
+	startPos = chunk->Get(&paramVersion, startPos);
+	return IPlugBase::UnserializeParams(chunk, startPos);
+}
