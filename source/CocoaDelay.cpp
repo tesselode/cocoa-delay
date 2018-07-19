@@ -382,7 +382,9 @@ bool CocoaDelay::SerializeState(ByteChunk* chunk)
 	IMutexLock(this);
 
 	int paramVersion = 1;
+	double stupid = 10004910491.0;
 	chunk->Put(&paramVersion);
+	chunk->Put(&stupid);
 	return IPlugBase::SerializeParams(chunk);
 }
 
