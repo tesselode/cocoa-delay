@@ -364,6 +364,7 @@ void CocoaDelay::OnParamChange(int paramIdx)
 		auto driveEnabled = GetParam(Parameters::driveGain)->Value() > 0.0;
 		pGraphics->GetControl(17)->GrayOut(!driveEnabled);
 		pGraphics->GetControl(18)->GrayOut(!driveEnabled);
+		pGraphics->GetControl(19)->GrayOut(!driveEnabled);
 		break;
 	}
 	}
