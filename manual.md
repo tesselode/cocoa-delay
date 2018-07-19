@@ -17,6 +17,7 @@ The time section affects the timing of echoes.
 	- **Frequency** - sets the speed of the oscillation from 0.1Hz to 10Hz.
 - **Drift**
 	- **Amount** - sets the amount of random fluctuation of the delay time.
+	- **Speed** - sets the speed of the fluctuation.
 
 ## Feedback section
 

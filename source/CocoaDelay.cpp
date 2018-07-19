@@ -9,6 +9,7 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::lfoAmount)->InitDouble("LFO amount", 0.0, 0.0, .5, .01, "", "", 2.0);
 	GetParam(Parameters::lfoFrequency)->InitDouble("LFO frequency", 2.0, .1, 10.0, .01, "hz");
 	GetParam(Parameters::driftAmount)->InitDouble("Drift amount", .001, 0.0, .05, .01, "", "", 2.0);
+	GetParam(Parameters::driftSpeed)->InitDouble("Drift speed", 1.0, .1, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::tempoSyncTime)->InitEnum("Tempo sync delay time", (int)TempoSyncTimes::tempoSyncOff, (int)TempoSyncTimes::numTempoSyncTimes);
 	GetParam(Parameters::feedback)->InitDouble("Feedback amount", 0.5, -1.0, 1.0, .01);
 	GetParam(Parameters::stereoOffset)->InitDouble("Stereo offset", 0.0, -.5, .5, .01);
@@ -73,11 +74,12 @@ void CocoaDelay::InitGraphics()
 	auto panModesMenu = pGraphics->LoadIBitmap(PANMODESMENU_ID, PANMODESMENU_FN, (int)PanModes::numPanModes);
 	auto filterModesMenu = pGraphics->LoadIBitmap(FILTERMODESMENU_ID, FILTERMODESMENU_FN, (int)FilterModes::numFilterModes);
 
-	pGraphics->AttachControl(new Knob(this, 42.677 * 4, 18 * 4, (int)Parameters::delayTime, &knobLeft));
-	pGraphics->AttachControl(new ISwitchPopUpControl(this, 66.677 * 4, 26 * 4, (int)Parameters::tempoSyncTime, &tempoSyncTimesMenu));
-	pGraphics->AttachControl(new Knob(this, 90.677 * 4, 18 * 4, (int)Parameters::lfoAmount, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 110.677 * 4, 18 * 4, (int)Parameters::lfoFrequency, &knobLeft));
-	pGraphics->AttachControl(new Knob(this, 138.677 * 4, 18 * 4, (int)Parameters::driftAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 34.5 * 4, 18 * 4, (int)Parameters::delayTime, &knobLeft));
+	pGraphics->AttachControl(new ISwitchPopUpControl(this, 58 * 4, 26 * 4, (int)Parameters::tempoSyncTime, &tempoSyncTimesMenu));
+	pGraphics->AttachControl(new Knob(this, 82.5 * 4, 18 * 4, (int)Parameters::lfoAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 102.5 * 4, 18 * 4, (int)Parameters::lfoFrequency, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 130.5 * 4, 18 * 4, (int)Parameters::driftAmount, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 150.5 * 4, 18 * 4, (int)Parameters::driftSpeed, &knobLeft));
 
 	pGraphics->AttachControl(new Knob(this, 28 * 4, 62 * 4, (int)Parameters::feedback, &knobMiddle));
 	pGraphics->AttachControl(new Knob(this, 48 * 4, 62 * 4, (int)Parameters::stereoOffset, &knobMiddle));
@@ -233,8 +235,9 @@ void CocoaDelay::UpdateLfo()
 
 void CocoaDelay::UpdateDrift()
 {
-	driftVelocity += random() * 10000.0 * dt;
-	driftVelocity -= driftVelocity * 2.0 * dt;
+	auto driftSpeed = GetParam(Parameters::driftSpeed)->Value();
+	driftVelocity += random() * 10000.0 * driftSpeed * dt;
+	driftVelocity -= driftVelocity * 2.0 * sqrt(driftSpeed) * dt;
 	driftPhase += driftVelocity * dt;
 }
 
@@ -352,19 +355,22 @@ void CocoaDelay::OnParamChange(int paramIdx)
 	case Parameters::lfoAmount:
 		pGraphics->GetControl(4)->GrayOut(GetParam(Parameters::lfoAmount)->Value() == 0.0);
 		break;
+	case Parameters::driftAmount:
+		pGraphics->GetControl(6)->GrayOut(GetParam(Parameters::driftAmount)->Value() == 0.0);
+		break;
 	case Parameters::duckAmount:
 	{
 		auto duckingEnabled = GetParam(Parameters::duckAmount)->Value() > 0.0;
-		pGraphics->GetControl(11)->GrayOut(!duckingEnabled);
 		pGraphics->GetControl(12)->GrayOut(!duckingEnabled);
+		pGraphics->GetControl(13)->GrayOut(!duckingEnabled);
 		break;
 	}
 	case Parameters::driveGain:
 	{
 		auto driveEnabled = GetParam(Parameters::driveGain)->Value() > 0.0;
-		pGraphics->GetControl(17)->GrayOut(!driveEnabled);
 		pGraphics->GetControl(18)->GrayOut(!driveEnabled);
 		pGraphics->GetControl(19)->GrayOut(!driveEnabled);
+		pGraphics->GetControl(20)->GrayOut(!driveEnabled);
 		break;
 	}
 	}

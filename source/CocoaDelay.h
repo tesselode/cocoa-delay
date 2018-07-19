@@ -19,6 +19,7 @@ enum class Parameters
 	lfoAmount,
 	lfoFrequency,
 	driftAmount,
+	driftSpeed,
 	tempoSyncTime,
 	feedback,
 	stereoOffset,
