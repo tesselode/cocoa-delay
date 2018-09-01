@@ -282,6 +282,17 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 {
 	for (int s = 0; s < nFrames; s++)
 	{
+		// workaround for daws like renoise that don't start processing until the effect receives an input.
+		// if it's the first sample to be processed, the read positions will be immediately set to their targets.
+		// this way, when you first start a project, each delay plugin doesn't have to "slide up" to the correct delay time.
+		switch (warmedUp)
+		{
+		case false:
+			GetReadPositions(readPositionL, readPositionR);
+			warmedUp = true;
+			break;
+		}
+
 		UpdateParameters();
 		UpdateReadPositions();
 		UpdateDucking(inputs[0][s] + inputs[1][s]);

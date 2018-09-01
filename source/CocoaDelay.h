@@ -109,6 +109,7 @@ private:
 	int writePosition;
 	double readPositionL;
 	double readPositionR;
+	bool warmedUp = false;
 
 	// fading parameters
 	PanModes currentPanMode = PanModes::stationary;
