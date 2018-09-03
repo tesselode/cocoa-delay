@@ -14,7 +14,7 @@ Notable features:
 
 Feel free to give feedback on design, report bugs, make pull requests, etc. I like all sorts of involvement!
 
-### Building Mika Micro
+### Building Cocoa Delay
 
 1. Clone [wdl-ol](https://github.com/olilarkin/wdl-ol).
 2. Add the necessary include files for the build targets you want to use. See [Martin Finke's tutorial](http://www.martin-finke.de/blog/articles/audio-plugins-002-setting-up-wdl-ol/) for more information.
