@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cmath>
+#include <memory>
 
 enum class FilterModes
 {

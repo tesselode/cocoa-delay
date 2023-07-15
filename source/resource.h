@@ -17,8 +17,8 @@
 #define VIEW_CLASS_STR "CocoaDelay_View"
 
 // Format        0xMAJR.MN.BG - in HEX! so version 10.1.5 would be 0x000A0105
-#define PLUG_VER 0x00010000
-#define VST3_VER_STR "1.0.0"
+#define PLUG_VER 0x00010001
+#define VST3_VER_STR "1.0.1"
 
 #define PLUG_COPYRIGHT  "Copyright 2018 Andrew Minnich"
 

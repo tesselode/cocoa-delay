@@ -19,8 +19,8 @@ void CocoaDelay::InitParameters()
 	GetParam(Parameters::duckAttackSpeed)->InitDouble("Ducking attack", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::duckReleaseSpeed)->InitDouble("Ducking release", 10.0, .1, 100.0, .01, "", "", 2.0);
 	GetParam(Parameters::filterMode)->InitEnum("Filter mode", (int)FilterModes::onePole, (int)FilterModes::numFilterModes);
-	GetParam(Parameters::lowCut)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
-	GetParam(Parameters::highCut)->InitDouble("High pass cutoff", 0.001, 0.001, .99, .01, "", "", 2.0);
+	GetParam(Parameters::lowPassCutoff)->InitDouble("Low pass cutoff", .75, .01, 1.0, .01);
+	GetParam(Parameters::highPassCutoff)->InitDouble("High pass cutoff", 0.001, 0.001, .99, .01, "", "", 2.0);
 	GetParam(Parameters::driveGain)->InitDouble("Drive amount", 0.1, 0.0, 10.0, .01, "", "", 2.0);
 	GetParam(Parameters::driveMix)->InitDouble("Drive mix", 1.0, 0.0, 1.0, .01);
 	GetParam(Parameters::driveCutoff)->InitDouble("Drive filter cutoff", 1.0, .01, 1.0, .01);
@@ -90,8 +90,8 @@ void CocoaDelay::InitGraphics()
 	pGraphics->AttachControl(new Knob(this, 156 * 4, 62 * 4, (int)Parameters::duckReleaseSpeed, &knobLeft));
 
 	pGraphics->AttachControl(new ISwitchPopUpControl(this, 33 * 4, 108 * 4, (int)Parameters::filterMode, &filterModesMenu));
-	pGraphics->AttachControl(new Knob(this, 48 * 4, 100 * 4, (int)Parameters::lowCut, &knobRight));
-	pGraphics->AttachControl(new Knob(this, 68 * 4, 100 * 4, (int)Parameters::highCut, &knobLeft));
+	pGraphics->AttachControl(new Knob(this, 48 * 4, 100 * 4, (int)Parameters::lowPassCutoff, &knobRight));
+	pGraphics->AttachControl(new Knob(this, 68 * 4, 100 * 4, (int)Parameters::highPassCutoff, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 96 * 4, 100 * 4, (int)Parameters::driveGain, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 116 * 4, 100 * 4, (int)Parameters::driveMix, &knobLeft));
 	pGraphics->AttachControl(new Knob(this, 136 * 4, 100 * 4, (int)Parameters::driveCutoff, &knobRight));
@@ -307,8 +307,8 @@ void CocoaDelay::ProcessDoubleReplacing(double** inputs, double** outputs, int n
 		adjustPanning(outL, outR, circularPanAmount, outL, outR);
 
 		// filters
-		lp.Process(dt, outL, outR, GetParam(Parameters::lowCut)->Value());
-		hp.Process(dt, outL, outR, GetParam(Parameters::highCut)->Value(), true);
+		lp.Process(dt, outL, outR, GetParam(Parameters::lowPassCutoff)->Value());
+		hp.Process(dt, outL, outR, GetParam(Parameters::highPassCutoff)->Value(), true);
 
 		// drive
 		auto driveAmount = GetParam(Parameters::driveGain)->Value();
